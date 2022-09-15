@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="bootstrap-v5.2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/plantilla.css" type="text/css">
+    <title>Inicio de sesión</title>
+  </head> 
+  <body>
+    <div class="container-fluid align-items-center">
+
+      <div class="row head">
+        <div class="col-md-3">
+          <img src="imagenes/cfe.jpg" alt="Logo CFE" class="img-fluid">
+        </div>
+  
+        <div class="col-md-9 boxMod1">
+            <small>Gerencia Regional de Transmisión Sureste 
+                <br>
+            Zona de Transmisión Malpaso</small>
+          <p>Sistema de Control de Resguardo Poca Cuantia</p>
+        </div>
+      </div>
+
+
+        <div class="card-body">
+            <div class="card-text">
+              <div class="container-fluid">
+                      <div class="row">
+                        <div class="col-3">
+                         <div class="card text-black border-success respons">
+                            <div class="card-header">
+                              <strong>Inicio de sesión</strong>
+                            </div>
+                            <div class="card-body">
+                
+                              <div class="row justify-content-center my-4">
+                                <div class="col-lg-8">
+                                  <form class="row g-3" id="cardLogin" name="cardLogin"  method="post" action="php/login.php">
+                
+                                    <label for="user" class="form-label"><strong>Usuario</strong></label>
+                                    <div class="input-group mb-3">
+                                      <span class="input-group-text">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+                                          <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                                        </svg>
+                                      </span>
+                                      <input type="text" id="rpe" name="rpe" placeholder="RPE" class="form-control" required="true"/>
+                                    </div>
+                
+                                    <label for="passw" class="form-label"><strong>Contraseña</strong></label>
+                                    <div class="input-group mb-3">
+                                      <span class="input-group-text">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
+                                          <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                                        </svg>
+                                      </span>
+                                      <input type="password" id="pass" name="pass" placeholder="Contraseña" class="form-control" required="true"/>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                      <button id="submit" type="submit" class="btn btn-success">Iniciar Sesión</button>
+                                    </div>
+                
+                                    <!-- if isset($_SESSION["message"]) -->
+                                      <div class="alert alert-warning alert-dismissible fade show" id="message" role="alert">
+                                        <!-- echo $_SESSION["message"] -->
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                      </div> 
+                                    <!-- endif -->
+                
+                                  </form>
+                                </div>
+                              </div>
+                              
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
+    <script src="bootstrap-v5.2/js/bootstrap.min.js"></script>
+  </body>
+
+</html>

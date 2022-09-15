@@ -1,0 +1,45 @@
+{
+	"sProcessing":     "Procesando...",
+	"sLengthMenu":     "Mostrar _MENU_ registros",
+	"sZeroRecords":    "No se encontraron resultados",
+	"sEmptyTable":     "Ningún dato disponible en esta tabla",
+	"sInfo":           "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+	"sInfoEmpty":      "Mostrando registros del 0 al 0 de un total de 0 registros",
+	"sInfoFiltered":   "(filtrado de un total de _MAX_ registros)",
+	"sInfoPostFix":    "",
+	"sSearch":         "Buscar:",
+	"sUrl":            "",
+	"sInfoThousands":  ",",
+	"sLoadingRecords": "Cargando...",
+	"decimal":        ".",
+	"thousands":      ",",
+	"oPaginate": {
+		"sFirst":    "Primero",
+		"sLast":     "Último",
+		"sNext":     "Siguiente",
+		"sPrevious": "Anterior"
+	},
+	"oAria": {
+		"sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+		"sSortDescending": ": Activar para ordenar la columna de manera descendente"
+	},	
+	"buttons": {
+		"copyTitle": "Copiar al portapapeles",
+		"copyKeys": "Presiona <i>ctrl</i> o <i>\u2318</i> + <i>C</i> para copiar los registros de tu tabla al portapapeles. <br><br>Pour annuler, cliquez sur ce message ou appuyez sur Echap.",
+		"copySuccess": {
+			"_": "Se copiaron %d registros",
+			"1": "Se copió 1 registro"
+		},
+		"pageLength": {
+			"_": "Mostrar %d filas",
+			"1": "Mostrar 1 fila"
+		}
+	},
+	"select": {
+		"rows": {
+			"_": "Haz seleccionado %d filas",
+			"0": "Click sobre una fila para seleccionar",
+			"1": "Solamente 1 fila seleccionada"
+		}
+	}
+}

@@ -1,0 +1,62 @@
+<div class="modal fade" id="modalModUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">
+            Actualizar Perfil de Usuario
+            <!-- if isset($_SESSION["rpe"]) -->
+                <!-- echo $_SESSION["rpe"] -->
+            <!-- else -->
+                ?
+            <!-- endif -->
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+
+          <form class="form-horizontal" role="form" accept-charset="UTF-8" name="formPerfil" id="formPerfil">
+            <table class="table table-condensed">
+              <tr>
+                <td align="right"><label class="control-label">Usuario: </span></td>
+                <td colspan="3" ><input type="text" name="nombre" id="nombre" class="form-control input-sm"></input></td>
+              </tr>
+              <tr valign="baseline">
+                <td align="right"><label class="control-label">Nueva Contraseña:</label></td>
+                <td colspan="3" ><input type="password" name="pass1" id="pass1" class="form-control input-sm" value="Qwerty123"></input></td>
+              </tr>
+              <tr valign="baseline">
+                <td align="right"><label class="control-label">Confirmar Contraseña:</label></td>
+                <td colspan="3" ><input type="password" name="pass2" id="pass2" class="form-control input-sm" value="Qwerty123"></input></td>
+              </tr>	  
+            </table>
+
+            <input type="hidden" id="accion" name="accion" value=""/>
+            <input type="hidden" id="rpe" name="rpe" value=""/>
+
+          </form>
+          
+          <small>
+            <div class="card border-primary mb-3" style="max-width: auto;">
+              <div class="card-header bg-primary text-white">
+                La contraseña debería cumplir con los siguientes requerimientos:
+              </div>
+              <div class="card-body text-black">
+                <ul>
+                  <li id="letras" class="text-danger">Al menos debería tener <strong>una letra</strong></li>
+                  <li id="mayusculas" class="text-danger">Al menos debería tener <strong>una letra en mayúsculas</strong></li>
+                  <li id="numero" class="text-danger">Al menos debería tener <strong>un número</strong></li>
+                  <li id="longitud" class="text-danger">Debería tener <strong>8 carácteres</strong> como mínimo</li>
+                  <li id="confirmacion" class="text-danger">Debe <strong>confirmar </strong> la contraseña</li>
+                </ul>
+              </div>
+            </div>
+          </small>
+        
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="guardarCambios" disabled>Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
