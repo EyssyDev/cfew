@@ -1,25 +1,23 @@
 <?php
 error_reporting(0);
 require('usuarios.php');
+$rpe = (isset($_POST['rpe']) ? $_POST['rpe']: '');
+$nombre = (isset($_POST['nombre'])) ? $_POST['nombre']:'';
+$pass = (isset($_POST['pass1'])) ? $_POST['pass1']: '';
 
-if (isset($_POST['rpe']) && isset($_POST['nombre']) && isset($_POST['pass1'])) {
-    $rpe = $_POST['rpe'];
-    $nombre = $_POST['nombre'];
-    $pass = $_POST['pass1'];
+    $resultado = array();
+    $resultado["param"] = $_POST;
     $sql = "SELECT nombre, password FROM usuario_scate WHERE rpe='".$rpe."'";
     $resultado1 = getArraySQL($sql, "usuarios", false);
-    if ($resultado1["success"]) {
+    if ($resultado1["success"]) 
+    {
         $sql = "UPDATE `usuario_scate` SET `nombre`='".$nombre."',`password`=SHA1('".$pass."') WHERE `rpe`='".$rpe."'";
-        $resultado2 = getArraySQL($sql, "usuarios", false);
-        if ($resultado2["success"]) {
-            echo 'OK';
+        $update = getArraySQL($sql, "usuarios", false);
+        if($update["success"]) {
+            $resultado['success'] = true;
+            $resultado['message'] = "Actualización correcta";
         }
-        // header("/.");
-	    die();
     }
-    else {
-        // header("/.");
-	    die();
-    }
-}
+    header('Content-type: application/json; charset=utf-8');
+    echo json_encode($resultado);
 ?>

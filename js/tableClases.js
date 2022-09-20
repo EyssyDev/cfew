@@ -1,12 +1,15 @@
 $(document).ready(function () {
-    var tabla;
+
     var auxID = "";
     var auxDes = "";
     var auxSub = "";
     
     $(function() {
         $('#tablaClases').bootstrapTable()
-    })
+    });
+
+    
+
     // $("#modalAgregarClase #subclaseRef").multiselect({
     //     maxHeight: 200,
     //     includeSelectAllOption: true,
@@ -84,23 +87,26 @@ $(document).ready(function () {
     //         "url": "DataTables/Spanish.json",
     //     },
     // });
+// -------------------------------
+// -------------------------------deleta clases
+var $table = $('#tablaClases')
+var $select = $('#botonOpciones')
 
-    $('#tablaCatalogos tbody').on('click', 'tr', function () {
-        if ($(this).hasClass('selected')) {
-            $(this).removeClass('selected');
-            $("#botonOpciones").attr('disabled','disabled');
-        } 
-        else {
-            tabla.$('tr.selected').removeClass('selected');
-            $(this).addClass('selected');
-            $("#botonOpciones").removeAttr('disabled');
-            var datos = tabla.row(this).data();
-            auxID = datos[0];
-            auxDes = datos[1];
-            auxSub = datos[2];
-        }
-        
-        // -------------------------------------------------------------------------------------------
+    $(function() {
+    $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+        $select.prop('disabled', !$table.bootstrapTable('getSelections').length)
+        // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
+    })
+    $data = $select.click(function () {
+        var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+            auxID = row.id_clase;
+            auxDes = row.descripcion;
+            auxSub = row.subclase;
+        return row.id
+        })
+
+
+         // -------------------------------------------------------------------------------------------
         // -------------------------------------Eliminar Clase----------------------------------------
         // -------------------------------------------------------------------------------------------
         $('#botonEliminarClase').click(function () {
@@ -123,8 +129,7 @@ $(document).ready(function () {
 				}
 			});
         });
-
-        // -------------------------------------------------------------------------------------------
+         // -------------------------------------------------------------------------------------------
         // -------------------------------Modificar Modal Clase----------------------------------------
         // -------------------------------------------------------------------------------------------
         
@@ -145,6 +150,34 @@ $(document).ready(function () {
             $('#accion').val('Modificar');
             
         });
+        $table.bootstrapTable('remove', {
+        field: 'id',
+        values: ids
+        })
+        $select.prop('disabled', true)
+    })
+
+    });
+
+    $('#tablaCatalogos tbody').on('click', 'tr', function () {
+        if ($(this).hasClass('selected')) {
+            $(this).removeClass('selected');
+            $("#botonOpciones").attr('disabled','disabled');
+        } 
+        else {
+            tabla.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+            $("#botonOpciones").removeAttr('disabled');
+            var datos = tabla.row(this).data();
+            auxID = datos[0];
+            auxDes = datos[1];
+            auxSub = datos[2];
+        }
+        
+       
+        
+
+       
     });
     // -------------------------------------------------------------------------------------------
     // -------------------------------------Agregar Clase----------------------------------------
@@ -163,7 +196,7 @@ function agregarClase() {
         var subclaseRef = $("#subclaseRef").val();
         var desClase = $("#desClase").val();*/
         parametros = formToObject($("form#formClaseA"));
-        console.log(parametros);
+        // console.log(parametros);
         //if(idClase != '' && subclaseRef !='' && desClase !=''){
             $.ajax({
                 url:'php/operacionesClase.php',
@@ -178,12 +211,7 @@ function agregarClase() {
                             "La clase fue operada con exito.", {
                                 icon: "success",
                             }
-                        )
-                        .then(function() {
-                            // window.location = 'php/accederClases.php';
-                            //Recargar la Tabla unicamente
-                           
-                        });                      
+                        );                     
                     }
                    
                     else {
@@ -193,7 +221,7 @@ function agregarClase() {
                             'error'
                         )
                         .then(function() {
-                            window.location = 'php/accederClases.php';
+                            
                         });   
                     }
                 }
@@ -214,10 +242,7 @@ function eliminarClase(id) {
                     "La clase fue eliminada con exito.", {
                         icon: "success",
                     }
-                )
-                .then(function() {
-                    window.location = 'php/accederClases.php';
-                });                      
+                );                      
             }
             else { 
                 swal (
@@ -226,7 +251,7 @@ function eliminarClase(id) {
                     'error'
                 )
                 .then(function() {
-                    window.location = 'php/accederClases.php';
+                 
                 });   
             }
         }
@@ -245,19 +270,19 @@ function formToObject(form) {
 }
 
 
-function queryParams(params) {
-    params.id_clase = $("#filtro_centro").val();
-    params.subclase = $("#filtro_estado").val();
-    params.descripcion = $("#filtro_desde").val();
-    console.log(params);
-    return params;
-}
+// function queryParams(params) {
+//     params.id_clase = $("#filtro_centro").val();
+//     params.subclase = $("#filtro_estado").val();
+//     params.descripcion = $("#filtro_desde").val();
+//     console.log(params);
+//     return params;
+// }
 
 function ajaxRequest(params) {
-    var url = 'php/accederClases.php';
+    var url = 'php/Select_all_clases.php';
     //consola(jQuery.parseJSON(params.data));
-    $.post( url, jQuery.parseJSON(params.data)).then(function (res) {
-        console.log(res);
+    $.get( url, jQuery.parseJSON(params.data)).then(function (res) {
+        // console.log(res);
         params.success(res);
     });	
 }

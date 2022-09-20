@@ -69,7 +69,7 @@ function getArraySQL($sql, $db, $debug = false) {
 
 	else {
 		$rawdata["success"] = false;
-		$rawdata["message"] = "No se encontraton registros";
+		$rawdata["message"] = "No se encontraron registros";
 	}
 
     disconnectDB($conexion);

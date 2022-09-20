@@ -76,18 +76,21 @@
       </div>  
     <table
         id="tablaClases"
+        data-multiple-select-row="true"
+        data-click-to-select="true"
+        data-show-copy-rows="true"  
+        data-show-print="true"
         data-show-columns="true"
         data-toolbar="#toolbar"
         data-pagination="true"
         data-search="true"
-        data-click-to-select="true"
-        data-show-copy-rows="true"
         data-method="post" 
         data-query-params="queryParams"
-        data-ajax="ajaxRequest" 
+        data-ajax="ajaxRequest"   
         >
         <thead>
             <tr>
+            <th data-field="state" data-checkbox="true">ID</th>
             <th data-field="id_clase" data-sortable="true">ID Clase</th>
             <th data-field="descripcion" data-sortable="true">Descripcion</th>
             <th data-field="subclase" data-sortable="true">Subclase</th>

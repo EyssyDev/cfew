@@ -6,11 +6,11 @@ $sql = "SELECT * FROM clase";
 $resultado = getArraySQL($sql, "bmpc", true);
 header('Content-type: application/json; charset=utf-8');
 
-if($res["success"]){
-	echo json_encode($res["data"]);
-} else {
-	echo "[]";
-}
+// if($resultado["success"]){
+// 	echo json_encode($resultado["data"]);
+// } else {
+// 	echo "[]";
+// }
 
 $sql2 = "SELECT DISTINCT SUBSTRING(id_subclase, 1, 2) AS id_subclase FROM subclase;";
 $resultado2 = getArraySQL($sql2, "bmpc", true);

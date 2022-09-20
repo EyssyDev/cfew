@@ -51,40 +51,44 @@ function formPerfil() {
 				}
 			});
 			
-			function actualizar () {
-				var datos = new FormData ();
-				datos.append("rpe", $("#rpe").val());
-				datos.append("nombre", $("#nombre").val());
-				datos.append("pass1", $("#pass1").val());
-				datos.append("pass2", $("#pass2").val());
-				$.ajax ({  
-					type : 'POST',
-					url  : 'php/editarPerfil.php',
-					data:  datos,
-					contentType: false,
-					processData:false,
-					success:function(res) {  
-						// alert(res);
-						if(res == "OK") {
-							swal(
-								"Tus datos fueron actualizados.", {
-									icon: "success",
-								}
-							)
-							.then(function() {
-								window.location = 'index.php';
-							});                            
-						}
-						else {
-							swal (
-								'Falla en registro',
-								'Hubo un error al actualizar tus datos.',
-								'error'
-							)
-						}
-					}  
-				});
-			}
+			
 		});
 	});
+}
+function actualizar () {
+	parametros = formToObject($("form#formPerfil"));
+	// console.log(parametros);
+	$.ajax ({  
+		type : 'POST',
+		url  : 'php/editarPerfil.php',
+		data:  parametros,
+		success:function(data) {  
+			console.log(data);
+			if(data.success) {
+				swal(
+					"Tus datos fueron actualizados.", {
+						icon: "success",
+					}
+				)
+				.then(function() {
+					window.location = 'index.php';
+				});                            
+			}
+			else {
+				swal (
+					'Falla en registro',
+					'Hubo un error al actualizar tus datos.' + data.message,
+					'error'
+				)
+			}
+		}  
+	});
+}
+function formToObject(form) {
+    var arrayForm = $(form).serializeArray();
+    var objectForm = {};
+    arrayForm.forEach(function (obj, index) {
+        objectForm[obj.name] = obj.value;
+    });
+    return objectForm;
 }
