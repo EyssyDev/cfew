@@ -1,13 +1,15 @@
+var datos = []; 
 $(document).ready(function() {
 	$("#modalModUsuario #messageModal").hide();
     $("#edit").click(function() {
+		
       formPerfil();
     });
 });
 
 function formPerfil() {
 	ventana = '#modalModUsuario';
-	$(ventana).load("pNavBar", {}, function(pag) {
+		
 		$(ventana +" #guardarCambios").attr('disabled','disabled');
 		$(ventana + " input:password").off('keyup').on('keyup', function(event) {
 			$(ventana + " #messageModal").hide();
@@ -53,17 +55,18 @@ function formPerfil() {
 			
 			
 		});
-	});
+	
 }
 function actualizar () {
 	parametros = formToObject($("form#formPerfil"));
+	datos["nombre"] = parametros["nombre"];
 	// console.log(parametros);
 	$.ajax ({  
 		type : 'POST',
 		url  : 'php/editarPerfil.php',
 		data:  parametros,
 		success:function(data) {  
-			console.log(data);
+			// console.log(data);
 			if(data.success) {
 				swal(
 					"Tus datos fueron actualizados.", {
@@ -84,6 +87,7 @@ function actualizar () {
 		}  
 	});
 }
+
 function formToObject(form) {
     var arrayForm = $(form).serializeArray();
     var objectForm = {};

@@ -37,11 +37,13 @@
                                     </select>
                                 </td>
                             </tr>
+                            
                             <tr valign="baseline">
                                 <td align="right"><label class="control-label">Descripción:</label></td>
                                 <td colspan="3" ><textarea rows = "4" cols = "40" name="desClase" id="desClase" class="form-control input-sm" required></textarea></td>
                             </tr>	  
-                        </table>             
+                        </table>
+                                     
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-success" id="guardarCambiosClaseA">Registrar Clase</button>
@@ -86,7 +88,7 @@
         data-search="true"
         data-method="post" 
         data-query-params="queryParams"
-        data-ajax="ajaxRequest"   
+        data-ajax="ajaxRequestCl"   
         >
         <thead>
             <tr>
@@ -100,47 +102,7 @@
       
     </tbody>
     </table>
-
-
-
     </div>
-    <!-- <div class="container" id="clusterModClase2">
-        <table id="tablaCatalogos" class="display" style="width:100%">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Descripción</th>
-                    <th>Subclase</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!?php
-                // $numEle = sizeof($_SESSION['Clases'], 0);
-                // for ($i = 0; $i < $numEle; $i++) {
-                ?>
-                <tr>
-                    <td>
-                        <!?php
-                        // echo $_SESSION['Clases'][$i]["id_clase"];
-                        ?>
-                    </td>
-                    <td>
-                        <!?php
-                        // echo $_SESSION['Clases'][$i]["descripcion"];
-                        ?>
-                    </td>
-                    <td>
-                        <!?php
-                        // echo $_SESSION['Clases'][$i]["subclase"];
-                        ?>
-                    </td>
-                </tr>
-                <!?php
-                //} 
-                ?>
-            </tbody>
-        </table>
-    </div> -->
     <br>
 </div>
 

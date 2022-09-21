@@ -22,6 +22,10 @@ if ($_SESSION['Num'] == 2) {
     ilustrarClases();
 }
 
+if ($_SESSION['Num'] == 3) {
+    ilustrarSubClases();
+}
+
 function ilustrarLogin() {
     $plantilla = new Plantilla;
     $plantilla->ilustrar('login.html');
@@ -40,6 +44,14 @@ function ilustrarClases() {
     $plantilla->ilustrar('pHeader.php');
     $plantilla->ilustrar('pNavBar.php');
     $plantilla->ilustrar('catalogosVista.php');
+    $plantilla->ilustrar('pFooter.html');
+}
+
+function ilustrarSubClases() {
+    $plantilla = new Plantilla;
+    $plantilla->ilustrar('pHeader.php');
+    $plantilla->ilustrar('pNavBar.php');
+    $plantilla->ilustrar('catalogosVista2.php');
     $plantilla->ilustrar('pFooter.html');
 }
 ?>

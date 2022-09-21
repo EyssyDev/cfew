@@ -15,15 +15,4 @@ require_once "php/refrescarSesion.php";
    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css">
    <link rel="stylesheet" href="css/plantilla.css" type="text/css">
    <title>Sistema de Resguardo BMPC v2.0</title>
-   <?php
-      session_start();
-      // echo $_SESSION['Num'];
-      if ($_SESSION['Num'] == 2) {
-   ?>
-      <!-- <script type="text/javascript" src="DataTables/datatables.min.js"></script>
-      <script type="text/javascript" src="js/tableClases.js"></script>
-      <link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/> -->
-   <?php
-      }
-   ?>
 
