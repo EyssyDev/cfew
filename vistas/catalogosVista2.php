@@ -1,3 +1,5 @@
+
+
 <div class="container-respons">
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
@@ -56,8 +58,9 @@
         id="tablaSubClases"
         data-multiple-select-row="true"
         data-click-to-select="true"
-        data-show-copy-rows="true"  
+        data-show-copy-rows="true" 
         data-show-print="true"
+        data-show-refresh="true"
         data-show-columns="true"
         data-toolbar="#toolbar"
         data-pagination="true"

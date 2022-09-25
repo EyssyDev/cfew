@@ -1,6 +1,7 @@
 <?php
 error_reporting(0);
 require('usuarios.php');
+require_once('seguridad.php');
 $rpe = (isset($_POST['rpe']) ? $_POST['rpe']: '');
 $nombre = (isset($_POST['nombre'])) ? $_POST['nombre']:'';
 $pass = (isset($_POST['pass1'])) ? $_POST['pass1']: '';

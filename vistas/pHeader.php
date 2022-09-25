@@ -1,9 +1,10 @@
-<?php
-require_once "php/refrescarSesion.php";
-?>
+<!-- <?php
+      // require "php/refrescarSesion.php";
+      ?> -->
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,5 +15,5 @@ require_once "php/refrescarSesion.php";
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
    <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.21.0/dist/bootstrap-table.min.css">
    <link rel="stylesheet" href="css/plantilla.css" type="text/css">
+   <link rel="stylesheet" href="css/virtual-select.min.css" type="text/css">
    <title>Sistema de Resguardo BMPC v2.0</title>
-

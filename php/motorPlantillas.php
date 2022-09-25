@@ -16,9 +16,9 @@ Class Plantilla {
                 $contenido = preg_replace('/\[' . $clave . '\]/', $valor, $contenido);
             }
             $contenido = preg_replace('/\<\!\-\- if (.*) \-\->/', '<?php if ($1) : ?>', $contenido);
-            $contenido = preg_replace('/\<\!\-\- echo (.*) \-\->/', '<?php echo ($1) ; ?>', $contenido);
-            $contenido = preg_replace('/\<\!\-\- else \-\->/', '<?php else : ?>', $contenido);
-            $contenido = preg_replace('/\<\!\-\- endif \-\->/', '<?php endif; ?>', $contenido);
+                $contenido = preg_replace('/\<\!\-\- echo (.*) \-\->/', '<?php echo ($1) ; ?>', $contenido);
+                $contenido = preg_replace('/\<\!\-\- else \-\->/', '<?php else : ?>', $contenido);
+                $contenido = preg_replace('/\<\!\-\- endif \-\->/', '<?php endif; ?>', $contenido);
             eval(' ?>' . $contenido . '<?php ');
         }
         else {

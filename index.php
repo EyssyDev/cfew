@@ -26,33 +26,48 @@ if ($_SESSION['Num'] == 3) {
     ilustrarSubClases();
 }
 
-function ilustrarLogin() {
+if ($_SESSION['Num'] == 4) {
+    ilustrarResguardos();
+}
+
+function ilustrarLogin()
+{
     $plantilla = new Plantilla;
     $plantilla->ilustrar('login.html');
 }
 
-function ilustrarHome() {
+function ilustrarHome()
+{
     $plantilla = new Plantilla;
     $plantilla->ilustrar('pHeader.php');
     $plantilla->ilustrar('pNavBar.php');
-    $plantilla->ilustrar('home.html');
-    $plantilla->ilustrar('pFooter.html');
+    $plantilla->ilustrar('home.php');
+    $plantilla->ilustrar('pFooter.php');
 }
 
-function ilustrarClases() {
+function ilustrarClases()
+{
     $plantilla = new Plantilla;
     $plantilla->ilustrar('pHeader.php');
     $plantilla->ilustrar('pNavBar.php');
     $plantilla->ilustrar('catalogosVista.php');
-    $plantilla->ilustrar('pFooter.html');
+    $plantilla->ilustrar('pFooter.php');
 }
 
-function ilustrarSubClases() {
+function ilustrarSubClases()
+{
     $plantilla = new Plantilla;
     $plantilla->ilustrar('pHeader.php');
     $plantilla->ilustrar('pNavBar.php');
     $plantilla->ilustrar('catalogosVista2.php');
-    $plantilla->ilustrar('pFooter.html');
+    $plantilla->ilustrar('pFooter.php');
 }
-?>
 
+function ilustrarResguardos()
+{
+    $plantilla = new Plantilla;
+    $plantilla->ilustrar('pHeader.php');
+    $plantilla->ilustrar('pNavBar.php');
+    $plantilla->ilustrar('catalogosVista3.php');
+    $plantilla->ilustrar('pFooter.php');
+}

@@ -1,7 +1,18 @@
 <?php
 require_once('usuarios.php');
 require_once('seguridad.php');
-$sql = "SELECT * FROM subclase;";
+session_start();
+
+if (isset($_GET['rpe'])) {
+    $sql = "SELECT * FROM bien WHERE status = 1 AND rpe IN ('".$_GET['rpe']."')";
+}
+else if (isset($_POST['id_bien'])) {
+    $sql = "SELECT * FROM bien WHERE id_bien = '".$_POST['id_bien']."'";
+}
+else {
+    $sql = "SELECT * FROM bien WHERE status = 1 AND rpe IN ('".$_SESSION['rpe']."')";
+}
+
 $resultado = getArraySQL($sql, "bmpc", true);
 header('Content-type: application/json; charset=utf-8');
 
@@ -15,16 +26,16 @@ else {
 }
 
 function acceder($datos) {
-	session_start();
-	$_SESSION["SubClases"] = $datos;
-	$_SESSION['Num'] = 3;
+	// session_start();
+	$_SESSION["Bienes"] = $datos;
+	$_SESSION['Num'] = 4;
 	session_write_close();
 	header("Location: ../.");
 	die();
 }
 
 function mandarMensajeError($message) {
-	session_start();
+	// session_start();
 	$_SESSION['message'] = $message;
 	session_write_close();
 	header("Location: ../.");

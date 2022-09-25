@@ -1,3 +1,6 @@
+
+
+
 <div class="container-respons">
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
@@ -25,16 +28,9 @@
                             <tr valign="baseline">
                                 <td align="left"><label class="control-label">Subclase</label></td>
                                 <td>
-                                    <select id="subclaseRef" name="subclaseRef" class="form-control input-sm" >
-                                        <?php
-                                        $tamTol = sizeof($_SESSION["IdSubClase"], 0);
-                                        for ($i = 0; $i < $tamTol; $i++) {
-                                        ?>
-                                        <option value=<?php echo $_SESSION["IdSubClase"][$i]["id_subclase"]; ?> ><?php echo $_SESSION["IdSubClase"][$i]["id_subclase"]; ?></option>
-                                        <?php
-                                        }
-                                        ?>
-                                    </select>
+                                <select id="multipleSelect"  name="subClases[]" placeholder="Subclase" data-search="true" data-silent-initial-value-set="true">
+          
+                                </select>
                                 </td>
                             </tr>
                             
@@ -82,6 +78,7 @@
         data-click-to-select="true"
         data-show-copy-rows="true"  
         data-show-print="true"
+        data-show-refresh="true"
         data-show-columns="true"
         data-toolbar="#toolbar"
         data-pagination="true"

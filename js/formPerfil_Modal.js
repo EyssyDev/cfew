@@ -1,15 +1,15 @@
 var datos = []; 
 $(document).ready(function() {
 	$("#modalModUsuario #messageModal").hide();
+	getUser();
     $("#edit").click(function() {
-		
       formPerfil();
     });
 });
+ventana = '#modalModUsuario';
 
 function formPerfil() {
-	ventana = '#modalModUsuario';
-		
+
 		$(ventana +" #guardarCambios").attr('disabled','disabled');
 		$(ventana + " input:password").off('keyup').on('keyup', function(event) {
 			$(ventana + " #messageModal").hide();
@@ -57,6 +57,18 @@ function formPerfil() {
 		});
 	
 }
+
+
+function getUser(){
+
+	$.post("php/refrescarSesion.php", function(data, status) {
+			$('.name').text(data.nombre);
+			$('#disLink').text(data.tipo);
+			$(ventana+" #exampleModalLabel").html("Actualizar Perfil de Usuario " + data.rpe);
+			$(ventana+" #nombre").val(data.nombre);	
+	});
+}
+
 function actualizar () {
 	parametros = formToObject($("form#formPerfil"));
 	datos["nombre"] = parametros["nombre"];
@@ -74,7 +86,9 @@ function actualizar () {
 					}
 				)
 				.then(function() {
-					window.location = 'index.php';
+					getUser();
+					$('#formPerfil')[0].reset();	
+					$('#modalModUsuario').modal('hide');
 				});                            
 			}
 			else {

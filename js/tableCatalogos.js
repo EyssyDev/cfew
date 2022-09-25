@@ -1,43 +1,62 @@
-// variables globales de subclases
+// variables globales de clases
 var auxID = "";
 var auxDes = "";
 var auxSub = "";
 // variables globales de subclases
 var auxIDSubC = "";
 var auxDesSubC = "";
+var fecha = new Date();
+var fechaHoy = fecha.toLocaleDateString() + " a la(s) " + fecha.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+});
+// variables globales de reguardos
+var auxIdRes = "";
+var auxDesRes = "";
+var auxSerieRes = "";
+var auxCanRes = "";
+var auxUniRes = "";
+var auxImporteRes = "";
+var auxFechaCapRes = "";
+
 
 $(document).ready(function () {
     clases();
     subclases();
+    resguardos();
+
 });
+// -----------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------Tabla Clases------------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------
+function clases() {
 
 // -----------------------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------Tabla Clases---------------------------------------------------------
+// -----------------------------------------------------------Diseño Print------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
-function clases(){
-    
-    
     $(function() {
-        $('#tablaClases').bootstrapTable();
+        cargarTablaBT('#tablaClases');
+      
     });
 
-
     var $table = $('#tablaClases');
-    var $select = $('#botonOpciones');
+    var select = $('#botonOpciones');
 
     $(function() {
     $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
-        $select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+        select.prop('disabled', !$table.bootstrapTable('getSelections').length);
         // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
     })
-    $data = $select.click(function () {
+    data = select.click(function () {
+         multiselectClases();
         var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
             auxID = row.id_clase;
             auxDes = row.descripcion;
             auxSub = row.subclase;
         return row.id
         })
-        // -------------------------------------------------------------------------------------------
+
+        // // -------------------------------------------------------------------------------------------
         // -------------------------------------Eliminar Clase----------------------------------------
         // -------------------------------------------------------------------------------------------
         $('#botonEliminarClase').click(function () {
@@ -64,50 +83,80 @@ function clases(){
         // -------------------------------Modificar Modal Clase----------------------------------------
         // -------------------------------------------------------------------------------------------
         $('#botonAgregarClase').click(function() {
+            
             $('.modal-title').text('Agregar Clase');
             $('#idClase').val(auxID).removeAttr('disabled');
             $('#formClaseA')[0].reset();
             $('#accion').val('Agregar');
             $('#guardarCambiosClaseA').text('Registrar Clase');
         });
+
         $('#botonActualizarClase').click(function() {
+            multiselectClases();
             $('#modalAgregarClase').modal('show');
-            $('.modal-title').text('Editar Clase');
+            $('.modal-title').text('Editar Clase '+auxID);
             $('#idClase').val(auxID).attr('disabled','disabled');
             $('#idClase2').val(auxID);
             $('#desClase').val(auxDes);
-            $('#subclaseRef').val(auxSub);
+            $('#multipleSelect').val(auxSub)
             $('#guardarCambiosClaseA').text('Editar Clase');
             $('#accion').val('Modificar');
-            
         });
         $table.bootstrapTable('remove', {
         field: 'id',
         values: ids
         })
-        $select.prop('disabled', true)
+        select.prop('disabled', true)
     })
-
+       
     });
+
+      // -------------------------------------------------------------------------------------------
+    // -------------------------------------Multiselect---------------------------------------
+    // -------------------------------------------------------------------------------------------
+  
+    function multiselectClases() {
+        VirtualSelect.init({ 
+            ele: '#multipleSelect',         
+            multiple: true,
+            maxValues: 4,
+        });
+        
+
+          getAllSubclasesById();
+    }
+
+ 
+    function getAllSubclasesById(){
+        $.get("php/multiselectClases.php", function(data, status) {
+
+            $.each(data, function( key, valor) {
+                document.querySelector("#multipleSelect").addOption({
+                    value: valor.id_subclase,
+                    label: valor.id_subclase    
+                })
+            });
+        
+        });  
+    } 
     // -------------------------------------------------------------------------------------------
     // -------------------------------------Agregar Clase----------------------------------------
     // -------------------------------------------------------------------------------------------
     $("#guardarCambiosClaseA").click(function() {
         operarClase();
     });
-
-
     function operarClase() {
         $(document).on('submit','#formClaseA', function(event){
             event.preventDefault();
             parametros = formToObject($("form#formClaseA"));
-            // console.log(parametros);
+            // console.log(accion);
+            console.log(parametros);
                 $.ajax({
                     url:'php/operacionesClase.php',
                     method:'POST',
                     data: parametros, 
                     success:function(data) {
-                        console.log(data);
+                        // console.log(data);
                         if(data.success) {
                             swal(
                                 "La clase fue operada con exito.", {
@@ -171,25 +220,24 @@ function clases(){
     }
 }
 
-
 // -----------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------Tabla Subclases---------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
-function subclases(){
+function subclases() {
     $(function() {
-        $('#tablaSubClases').bootstrapTable();
+        cargarTablaBT('#tablaSubClases');
     });
 
 
     var $table = $('#tablaSubClases');
-    var $select = $('#botonOpciones');
+    var select = $('#botonOpciones');
 
     $(function() {
     $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
-        $select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+        select.prop('disabled', !$table.bootstrapTable('getSelections').length);
         // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
     })
-    $data = $select.click(function () {
+    data = select.click(function () {
         var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
             auxIDSubC = row.id_subclase;
             auxDesSubC = row.descripcion;
@@ -231,7 +279,7 @@ function subclases(){
         });
         $('#botonActualizarSubClase').click(function() {
             $('#modalAgregarSubClase').modal('show');
-            $('.modal-title').text('Editar Subclase');
+            $('.modal-title').text('Editar Subclase ' + auxIDSubC);
             $('#idSubClase').val(auxIDSubC).attr('disabled','disabled');
             $('#idSubClase2').val(auxIDSubC);
             $('#desSubClase').val(auxDesSubC);
@@ -243,7 +291,7 @@ function subclases(){
         field: 'id',
         values: ids
         })
-        $select.prop('disabled', true)
+        select.prop('disabled', true)
     })
 
     });
@@ -261,7 +309,7 @@ function subclases(){
         $(document).on('submit','#formSubClase', function(event){
             event.preventDefault();
             parametros = formToObject($("form#formSubClase"));
-            console.log(parametros);
+            // console.log(parametros);
                 $.ajax({
                     url:'php/operacionesSubClase.php',
                     method:'POST',
@@ -329,10 +377,93 @@ function subclases(){
         
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------Tabla Resguardo---------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------
+
+function resguardos() {
+    $(function() {
+        cargarTablaBT('#tablaResguardo');
+    });
+
+    var $table = $('#tablaResguardo');
+    var select = $('#botonOpcionesResguardos');
+
+    $(function() {
+        $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+            select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+        });
+
+        data = select.click(function () {
+            var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+                auxIdRes = row.id_bien;
+                auxDesRes = row.descripcion;
+                auxSerieRes = row.serie;
+                auxCanRes = row.cantidad;
+                auxUniRes = row.unidad;
+                auxImporteRes = row.importe;
+                auxFechaCapRes = row.fecha_captura;
+            return row.id
+            });
+            // -------------------------------------------------------------------------------------------
+            // -------------------------------------Eliminar Resguardo------------------------------------
+            // -------------------------------------------------------------------------------------------
+            // $('#botonEliminarClase').click(function () {
+            //     swal({
+            // 		title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
+            // 		text: "La clase no se podrá recuperar una vez hecha esta operación.",
+            // 		icon: "warning",
+            // 		buttons: true,
+            // 		dangerMode: true,
+            // 	}).then((willDelete) => {
+            // 		if (willDelete) {
+            // 			eliminarClase(auxID);
+            // 		} 
+            // 		else {
+            // 			swal (
+            //                 'Sin cambios',
+            //                 'No se realizó ninguna operación.',
+            //                 'error'
+            //             )
+            // 		}
+            // 	});
+            // });
+            // -------------------------------------------------------------------------------------------
+            // -------------------------------Modificar Modal Resguardo-----------------------------------
+            // -------------------------------------------------------------------------------------------
+            // $('#botonAgregarClase').click(function() {
+            //     $('.modal-title').text('Agregar Clase');
+            //     $('#idClase').val(auxID).removeAttr('disabled');
+            //     $('#formClaseA')[0].reset();
+            //     $('#accion').val('Agregar');
+            //     $('#guardarCambiosClaseA').text('Registrar Clase');
+            // });
+
+            // $('#botonActualizarClase').click(function() {
+            //     $('#modalAgregarClase').modal('show');
+            //     $('.modal-title').text('Editar Clase');
+            //     $('#idClase').val(auxID).attr('disabled','disabled');
+            //     $('#idClase2').val(auxID);
+            //     $('#desClase').val(auxDes);
+            //     $('#subClases').val(auxSub);
+            //     $('#guardarCambiosClaseA').text('Editar Clase');
+            //     $('#accion').val('Modificar');
+                
+            // });
+
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: ids
+            });
+            select.prop('disabled', true);
+        });
+    });
+}
+
 // -----------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------Helpers, AjaxRequest-------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
-
 function formToObject(form) {
     var arrayForm = $(form).serializeArray();
     var objectForm = {};
@@ -346,7 +477,7 @@ function formToObject(form) {
 function ajaxRequestCl(params) {
     var url = 'php/Select_all_clases.php';
     //consola(jQuery.parseJSON(params.data));
-    $.get( url, jQuery.parseJSON(params.data)).then(function (res) {
+    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
         // console.log(res);
         params.success(res);
     });	
@@ -354,7 +485,96 @@ function ajaxRequestCl(params) {
 
 function ajaxRequestSub(params) {
     var url = 'php/Select_all_subclases.php';
-    $.get( url, jQuery.parseJSON(params.data)).then(function (res) {
+    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
         params.success(res);
     });	
+}
+
+function ajaxRequestRes(params) {
+    var url = 'php/selectAllResguardos.php';
+    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
+        console.log(res);
+        params.success(res);
+    });	
+}
+
+function cargarTablaBT(tablaDinamica) {
+    $(tablaDinamica).bootstrapTable({
+        printPageBuilder: function (table) {
+            return `
+            <html>
+                <head>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+                    <style type="text/css" media="print">
+                        @page {
+                            size: auto;
+                            margin: 25px 0 25px 0;
+                        }
+                    </style>
+                    <style type="text/css" media="all">
+                        body {
+                            font-family: sans-serif;
+                        }
+                        table {
+                            border-collapse: collapse;
+                            font-size: 12px;
+                        }
+                        table, th, td {
+                            border: 1px solid grey;
+                        }
+                        th, td {
+                            text-align: left;
+                            vertical-align: middle;
+                            font-size: 15px;
+                            padding: 5px;
+                        }
+                        p {
+                            font-weight: bold;
+                            margin-left:20px;
+                        }
+                        small {
+                            margin-left:25px;
+                            color: gray
+                        }
+                        table {
+                            width:94%;
+                            margin-left:3%;
+                            margin-right:3%;
+                        }
+                        div.bs-table-print {
+                            text-align:center;
+                        }
+                        .boxMod1 {
+                            text-align: center;
+                            border-bottom: 2.5px solid grey;
+                        }
+                        .boxMod1 small {
+                            color: gray
+                        }
+                        .head {
+                            padding: 3%; 
+                            letter-spacing: 0.07em;
+                        }                         
+                    </style>
+                </head>
+                <title>Reporte BMPC</title>
+                <body>
+                    <small>Reporte generado el dia ${fechaHoy}</small>
+                    <div class="row head">
+                        <div class="col-md boxMod1">
+                            <small>
+                                Gerencia Regional de Transmisión Sureste 
+                                <br>
+                                Zona de Transmisión Malpaso
+                            </small>
+                            <p>Sistema de Control de Resguardo Poca Cuantia</p>
+                        </div>
+                    </div>
+                    <div class="bs-table-print">${table}</div>
+                </body>
+            </html>
+            `
+        }
+    });
+
 }
