@@ -11,98 +11,119 @@
                     <h5 class="modal-title" id="exampleModalLabel">Agregar Resguardo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form class="form-horizontal" role="form" accept-charset="UTF-8" name="formResguardo" id="formResguardo" method="POST"> 
-                        <table class="table table-condensed">
-                            <tr>
-                                <td><label class="control-label"><strong>RPE: </strong></span></td>
-                                <td><input type="text" name="rpeRes" id="rpeRes" class="form-control " required disabled></input></td>
-                                <td><label class="control-label"><strong>Fecha de Captura: </strong></label></td>
-                                <td><input type="date" name="fechaCapRes" id="fechaCapRes" step="1" class="form-control " required></td>
-                                 <!--  min="2013-01-01" max="2013-12-31" value=" echo date("Y-m-d"); -->
-                            </tr>	
-                        </table> 
-
-                        <nav>
-                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                <button class="nav-link active" id="pesBien-tab" data-bs-toggle="tab" data-bs-target="#pesBien" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Datos del Bien</button>
-                                <button class="nav-link" id="pesFactura-tab" data-bs-toggle="tab" data-bs-target="#pesFactura" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Datos de Factura</button>
-                            </div>
-                        </nav>
-                        <div class="tab-content" id="pesOpeRes">
-                            <div class="tab-pane fade show active" id="pesBien" role="tabpanel" aria-labelledby="pesBien-tab" tabindex="0">
-                                <div class="container">
-                                    <table class="table table-condensed">
-                                        <tr>
-                                            <td><label class="control-label"><strong>Clase: </strong></span></td>
-                                            <td><select id="claseSelRes"  name="listaClases[]" placeholder="Clase" data-search="true" data-silent-initial-value-set="true"></select></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>Subclase: </strong></span></td>
-                                            <td><select id="subClaseSelRes"  name="listaSubClases[]" placeholder="SubClase" data-search="true" data-silent-initial-value-set="true"></select></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>Descripcion: </strong></span></td>
-                                            <td><textarea rows = "2" cols = "40" name="desRes" id="desRes" class="form-control input-sm" required></textarea></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>Marca: </strong></span></td>
-                                            <td><input type="text" name="marcaRes" id="marcaRes" class="form-control input-sm" maxlength="3" required></input></td>
-                                            <td><label class="control-label"><strong>Modelo: </strong></label></td>
-                                            <td><input type="text" name="modeloRes" id="modeloRes" class="form-control input-sm" maxlength="3" required></input></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>Serie: </strong></span></td>
-                                            <td><input type="text" name="serieRes" id="serieRes" class="form-control input-sm" maxlength="3" required></input></td>
-                                            <td><label class="control-label"><strong>Unidad: </strong></label></td>
-                                            <td><select id="unidadSelRes"  name="listaUnidades[]" placeholder="Unidad" data-search="true" data-silent-initial-value-set="true"></select></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>Cantidad: </strong></span></td>
-                                            <td><input type="number" name="cantidadRes" id="cantidadRes" class="form-control input-sm" maxlength="3" required></input></td>
-                                            <td><label class="control-label"><strong>Importe $: </strong></label></td>
-                                            <td><input type="number" name="importeRes" id="importeRes" class="form-control input-sm" maxlength="3" required></input></td>
-                                        </tr>
-                                    </table>
-                                </div>
+                    <form class="form-horizontal" role="form" accept-charset="UTF-8" name="formResguardo" id="formResguardo" method="POST">
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <table class="table table-condensed">
+                                    <tr>
+                                        <td><label class="control-label"><strong>RPE: </strong></span></td>
+                                        <td><input type="text" name="rpeRes" id="rpeRes" class="inputMod form-control" value="" disabled></input></td>
+                                        <td><label class="control-label"><strong>Fecha de Captura: </strong></label></td>
+                                        <td><input type="date" name="fechaCapRes" id="fechaCapRes" step="1" class="inputMod form-control " required></td>
+                                    </tr>
+                                </table>
                             </div>
 
-                            <div class="tab-pane fade" id="pesFactura" role="tabpanel" aria-labelledby="pesFactura-tab" tabindex="0">
-                                <div class="container">
-                                    <table class="table table-condensed">
-                                        <tr>
-                                            <td><label class="control-label"><strong>Número: </strong></span></td>
-                                            <td><input type="text" name="numResFac" id="numResFac" class="form-control " required></input></td>
-                                            <td><label class="control-label"><strong>Fecha: </strong></label></td>
-                                            <td><input type="date" name="fechaResFac" id="fechaResFac" step="1" class="form-control " required></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>RFC: </strong></span></td>
-                                            <td><input type="text" name="rfcResFac" id="rfcResFac" class="form-control " required></input></td>
-                                            <td><label class="control-label"><strong>Posición: </strong></label></td>
-                                            <td><input type="number" name="posicionResFac" id="posicionResFac" class="form-control input-sm" maxlength="3" required></input></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>Archivo: </strong></span></td>
-                                            <td> <button type="file" class="btn btn-success" id="botonAgregarPDF"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></svg>  Agregar PDF</button> </td>
-                                            <td><label class="control-label">Soy un mensaje.</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td><label class="control-label"><strong>Nombre de Archivo: </strong></span></td>
-                                            <td><input type="text" name="nombrePDFResFac" id="nombrePDFResFac" class="form-control" required disabled></input></td>
-                                        </tr>
-                                    </table>
+                            <nav>
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <button class="nav-link active" id="pesBien-tab" data-bs-toggle="tab" data-bs-target="#pesBien" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Datos del Bien</button>
+                                    <button class="nav-link" id="pesFactura-tab" data-bs-toggle="tab" data-bs-target="#pesFactura" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Datos de Factura</button>
+                                </div>
+                            </nav>
+                            <div class="tab-content" id="pesOpeRes">
+                                <div class="tab-pane fade show active" id="pesBien" role="tabpanel" aria-labelledby="pesBien-tab" tabindex="0">
+                                    
+                                    <div class="container-fluid">
+                                        <table class="table table-condensed">
+                                            <tr>
+                                                <td><label class="control-label"><strong>Clase: </strong></span></td>
+                                                <td>
+                                                    <select class="inputMod form-control" id="claseSelRes"  name="listaClases" placeholder="Clase" data-search="true" data-silent-initial-value-set="true"></select>
+                                                    
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label class="control-label"><strong>Subclase: </strong></span></td>
+                                                <td><select class="inputMod form-control" id="subClaseSelRes"  name="listaSubClases" placeholder="SubClase" data-search="true" data-silent-initial-value-set="true"></select></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label class="control-label"><strong>Descripcion: </strong></span></td>
+                                                <td><textarea rows = "2" cols = "40" name="desRes" id="desRes" class="inputMod form-control" required></textarea></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label class="control-label"><strong>Marca: </strong></span></td>
+                                                <td><input type="text" name="marcaRes" id="marcaRes" class="inputMod form-control" required></input></td>
+                                                <td><label class="control-label"><strong>Modelo: </strong></label></td>
+                                                <td><input type="text" name="modeloRes" id="modeloRes" class="inputMod form-control"  required></input></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label class="control-label"><strong>Serie: </strong></span></td>
+                                                <td><input type="text" name="serieRes" id="serieRes" class="inputMod form-control"  required></input></td>
+                                                <td><label class="control-label"><strong>Unidad: </strong></label></td>
+                                                <td>
+                                                    <select class="inputMod form-control" id="unidadSelRes"  name="listaUnidades" placeholder="Unidad" data-search="true" data-silent-initial-value-set="true">  
+                                                        <option value="PIEZA">PIEZA</option>
+                                                        <option value="KG">KG</option>
+                                                        <option value="METRO">METRO</option>
+                                                        <option value="LITRO">LITRO</option>
+                                                        <option value="LOTE">LOTE</option>
+                                                        <option value="CAJA">CAJA</option>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><label class="control-label"><strong>Cantidad: </strong></span></td>
+                                                <td><input type="number" min="1" name="cantidadRes" id="cantidadRes" class="inputMod form-control"required></input></td>
+                                                <td><label class="control-label"><strong>Importe $: </strong></label></td>
+                                                <td><input type="number" min="1" name="importeRes" id="importeRes" class="inputMod form-control"  required></input></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="pesFactura" role="tabpanel" aria-labelledby="pesFactura-tab" tabindex="0">
+                                    <div class="container">
+                                        
+                                        <table class="table table-condensed">
+                                            <tr>
+                                                <td><label class="control-label"><strong>Número: </strong></span></td>
+                                                <td><input type="text" name="numResFac" id="numResFac" class="inputMod form-control " required></input></td>
+                                                <td><label class="control-label"><strong>Fecha: </strong></label></td>
+                                                <td><input type="date" name="fechaResFac" id="fechaResFac" step="1" class="inputMod form-control" required></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label class="control-label"><strong>RFC: </strong></span></td>
+                                                <td><input type="text" name="rfcResFac" id="rfcResFac" class="inputMod form-control" required></input></td>
+                                                <td><label class="control-label"><strong>Posición: </strong></label></td>
+                                                <td><input type="number" name="posicionResFac" id="posicionResFac" class="inputMod form-control" required></input></td>
+                                            </tr>
+                                            <tr>
+                                                <td><label class="control-label"><strong>Archivo: </strong></span></td>
+                                                <td><input class="form-control" type="file" id="formFile"></td>
+                                                <!-- <td>
+                                                   <div class="alert alert-warning form-control text-center" role="alert">
+                                                        Mensaje de error de ejemplo.
+                                                    </div>
+                                                </td> -->
+                                            </tr>   
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-       
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-success" id="guardarCambiosResguardos">Registrar Resguardo</button>
-                            <input type="hidden" id="accion" name="accion" value="Agregar"/>
+        
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-success" id="guardarCambiosResguardos">Registrar Resguardo</button>
+                                <input type="hidden" id="rpeRes2" name="rpeRes2" value=""/>
+                                <input type="hidden" id="accion" name="accion" value="Agregar"/>
+                            </div>
                         </div>
                     </form>
-                </div>
+                
             </div>
         </div>
     </div>

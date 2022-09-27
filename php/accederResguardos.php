@@ -2,7 +2,7 @@
 require_once('usuarios.php');
 require_once('seguridad.php');
 session_start();
-
+$_SESSION['Num'] = 4;
 if (isset($_GET['rpe'])) {
     $sql = "SELECT * FROM bien WHERE status = 1 AND rpe IN ('".$_GET['rpe']."')";
 }
@@ -28,7 +28,6 @@ else {
 function acceder($datos) {
 	// session_start();
 	$_SESSION["Bienes"] = $datos;
-	$_SESSION['Num'] = 4;
 	session_write_close();
 	header("Location: ../.");
 	die();

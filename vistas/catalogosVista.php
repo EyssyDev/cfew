@@ -1,6 +1,3 @@
-
-
-
 <div class="container-respons">
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
@@ -43,7 +40,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-success" id="guardarCambiosClaseA">Registrar Clase</button>
-                            <input type="hidden" id="accion" name="accion" value="Agregar"/>
+                            <input type="hidden" id="accion" name="accion" value=""/>
                             <input type="hidden" id="idClase2" name="idClase2" value=""/>
                         </div>
                     </form>

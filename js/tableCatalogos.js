@@ -1,89 +1,102 @@
 // variables globales de clases
-var auxID = "";
-var auxDes = "";
-var auxSub = "";
+var auxID, auxDes, auxSub = "";
 // variables globales de subclases
-var auxIDSubC = "";
-var auxDesSubC = "";
+var auxIDSubC, auxDesSubC = "";
 var fecha = new Date();
 var fechaHoy = fecha.toLocaleDateString() + " a la(s) " + fecha.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
 });
 // variables globales de reguardos
-var auxIdRes = "";
-var auxDesRes = "";
-var auxSerieRes = "";
-var auxCanRes = "";
-var auxUniRes = "";
-var auxImporteRes = "";
-var auxFechaCapRes = "";
-
+var auxIdRes, auxDesRes, auxSerieRes, auxCanRes, auxUniRes, auxImporteRes, auxFechaCapRes = "";
 
 $(document).ready(function () {
     clases();
     subclases();
     resguardos();
-
 });
+
 // -----------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------Tabla Clases------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
 function clases() {
 
-// -----------------------------------------------------------------------------------------------------------------------------------
-// -----------------------------------------------------------Diseño Print------------------------------------------------------------
-// -----------------------------------------------------------------------------------------------------------------------------------
-    $(function() {
+    // -----------------------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------Diseño Print------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------------------
+    $(function () {
         cargarTablaBT('#tablaClases');
-      
+        multiselectClases();
     });
 
     var $table = $('#tablaClases');
     var select = $('#botonOpciones');
 
-    $(function() {
-    $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
-        select.prop('disabled', !$table.bootstrapTable('getSelections').length);
-        // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
-    })
-    data = select.click(function () {
-         multiselectClases();
-        var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
-            auxID = row.id_clase;
-            auxDes = row.descripcion;
-            auxSub = row.subclase;
-        return row.id
+    $(function () {
+        $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+            select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+            // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
         })
+        data = select.click(function () {
+            var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+                auxID = row.id_clase;
+                auxDes = row.descripcion;
+                auxSub = row.subclase;
 
-        // // -------------------------------------------------------------------------------------------
-        // -------------------------------------Eliminar Clase----------------------------------------
-        // -------------------------------------------------------------------------------------------
-        $('#botonEliminarClase').click(function () {
-            swal({
-				title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
-				text: "La clase no se podrá recuperar una vez hecha esta operación.",
-				icon: "warning",
-				buttons: true,
-				dangerMode: true,
-			}).then((willDelete) => {
-				if (willDelete) {
-					eliminarClase(auxID);
-				} 
-				else {
-					swal (
-                        'Sin cambios',
-                        'No se realizó ninguna operación.',
-                        'error'
-                    )
-				}
-			});
+                return row.id
+            })
+            // $.each(items, function (i, item) {
+            //     $('#multipleSelect').append($('<option>', { 
+            //         value: item.value,
+            //         text : item.text 
+            //     }));
+            // });
+            // // -------------------------------------------------------------------------------------------
+            // -------------------------------------Eliminar Clase----------------------------------------
+            // -------------------------------------------------------------------------------------------
+            $('#botonEliminarClase').click(function () {
+                swal({
+                    title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
+                    text: "La clase no se podrá recuperar una vez hecha esta operación.",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        eliminarClase(auxID);
+                    }
+                    else {
+                        swal(
+                            'Sin cambios',
+                            'No se realizó ninguna operación.',
+                            'error'
+                        )
+                    }
+                });
+            });
+            // -------------------------------------------------------------------------------------------
+            // -------------------------------Modificar Modal Clase----------------------------------------
+            // -------------------------------------------------------------------------------------------
+
+            $('#botonActualizarClase').click(function () {
+                $('#modalAgregarClase').modal('show');
+                $('.modal-title').text('Editar Clase');
+                $('#idClase').val(auxID).attr('disabled', 'disabled');
+                $('#idClase2').val(auxID);
+                $('#desClase').val(auxDes);
+                $('#multipleSelect').val(auxSub);
+                $('#guardarCambiosClaseA').text('Editar Clase');
+                $('#accion').val('Modificar');
+
+            });
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: ids
+            })
+            select.prop('disabled', true)
         });
-        // -------------------------------------------------------------------------------------------
-        // -------------------------------Modificar Modal Clase----------------------------------------
-        // -------------------------------------------------------------------------------------------
-        $('#botonAgregarClase').click(function() {
-            
+
+        $('#botonAgregarClase').click(function () {
             $('.modal-title').text('Agregar Clase');
             $('#idClase').val(auxID).removeAttr('disabled');
             $('#formClaseA')[0].reset();
@@ -91,132 +104,114 @@ function clases() {
             $('#guardarCambiosClaseA').text('Registrar Clase');
         });
 
-        $('#botonActualizarClase').click(function() {
-            multiselectClases();
-            $('#modalAgregarClase').modal('show');
-            $('.modal-title').text('Editar Clase '+auxID);
-            $('#idClase').val(auxID).attr('disabled','disabled');
-            $('#idClase2').val(auxID);
-            $('#desClase').val(auxDes);
-            $('#multipleSelect').val(auxSub)
-            $('#guardarCambiosClaseA').text('Editar Clase');
-            $('#accion').val('Modificar');
-        });
-        $table.bootstrapTable('remove', {
-        field: 'id',
-        values: ids
-        })
-        select.prop('disabled', true)
-    })
-       
     });
 
-      // -------------------------------------------------------------------------------------------
+    // -------------------------------------------------------------------------------------------
     // -------------------------------------Multiselect---------------------------------------
     // -------------------------------------------------------------------------------------------
-  
-    function multiselectClases() {
-        VirtualSelect.init({ 
-            ele: '#multipleSelect',         
-            multiple: true,
-            maxValues: 4,
-        });
-        
 
-          getAllSubclasesById();
+    function multiselectClases() {
+        VirtualSelect.init({
+            ele: '#multipleSelect',
+            maxValues: 4,
+            multiple: true,
+            // selectedValue: [auxSub]
+        });
+        // console.log(auxSub);
+        getAllSubclasesById();
     }
 
- 
-    function getAllSubclasesById(){
-        $.get("php/multiselectClases.php", function(data, status) {
 
-            $.each(data, function( key, valor) {
+    function getAllSubclasesById() {
+        $.get("php/multiselectClases.php", function (data, status) {
+
+            $.each(data, function (key, valor) {
                 document.querySelector("#multipleSelect").addOption({
                     value: valor.id_subclase,
-                    label: valor.id_subclase    
+                    label: valor.id_subclase
                 })
             });
-        
-        });  
-    } 
+
+        });
+    }
     // -------------------------------------------------------------------------------------------
     // -------------------------------------Agregar Clase----------------------------------------
     // -------------------------------------------------------------------------------------------
-    $("#guardarCambiosClaseA").click(function() {
+    $("#guardarCambiosClaseA").click(function () {
         operarClase();
     });
     function operarClase() {
-        $(document).on('submit','#formClaseA', function(event){
+        $(document).on('submit', '#formClaseA', function (event) {
             event.preventDefault();
             parametros = formToObject($("form#formClaseA"));
             // console.log(accion);
-            console.log(parametros);
-                $.ajax({
-                    url:'php/operacionesClase.php',
-                    method:'POST',
-                    data: parametros, 
-                    success:function(data) {
-                        // console.log(data);
-                        if(data.success) {
-                            swal(
-                                "La clase fue operada con exito.", {
-                                    icon: "success",
-                                }
-                            )
-                            .then(function() {
-                                $('#modalAgregarClase').modal('hide');
-                                $('#tablaClases').bootstrapTable('refresh');
-                            });                   
-                        }
-                       
-                        else {
-                            swal (
-                                'Error de Operacion',
-                                'Hubo un error en la base de datos. ' + data.message,
-                                'error'
-                            )
-                            .then(function() {
-                                $('#modalAgregarClase').modal('hide');
-                            });   
-                        }
-                    }
-                });
-        });
-    }
-    
-    function eliminarClase(id) {
-        $.ajax({
-            url:'php/operacionesClase.php',
-            method:'POST',
-            data:{idClase: id, accion:"Eliminar"},
-            dataType:'',
-            success: function(data) {
-                console.log(data);
-                if(data.success) {
-                    swal(
-                        "La clase fue eliminada con exito.", {
+            // console.log(parametros);
+            $.ajax({
+                url: 'php/operacionesClase.php',
+                method: 'POST',
+                data: parametros,
+                success: function (data) {
+                    // console.log(data);
+                    if (data.success) {
+                        swal(
+                            "La clase fue operada con exito.", {
                             icon: "success",
                         }
-                    )
-                    .then(function() {
-                        $('#modalAgregarClase').modal('hide');
-                        $('#tablaClases').bootstrapTable('refresh');
-                    });                     
+                        )
+                            .then(function () {
+                                $('#modalAgregarClase').modal('hide');
+                                $('#tablaClases').bootstrapTable('refresh');
+                            });
+                    }
+
+                    else {
+                        swal(
+                            'Error de Operacion',
+                            'Hubo un error en la base de datos. ' + data.message,
+                            'error'
+                        )
+                            .then(function () {
+                                $('#modalAgregarClase').modal('hide');
+                            });
+                    }
                 }
-                else { 
-                    swal (
+            });
+        });
+    }
+
+    function eliminarClase(id) {
+        $.ajax({
+            url: 'php/operacionesClase.php',
+            method: 'POST',
+            data: { idClase: id, accion: "Eliminar" },
+            dataType: '',
+            success: function (data) {
+                // console.log(data);
+                if (data.success) {
+                    swal(
+                        "La clase fue eliminada con exito.", {
+                        icon: "success",
+                    }
+                    )
+                        .then(function () {
+                            $('#modalAgregarClase').modal('hide');
+                            $('#tablaClases').bootstrapTable('refresh');
+                        });
+                }
+                else {
+                    swal(
                         'Error de Operacion',
                         'Hubo un error en la base de datos. ' + data.message,
                         'error'
                     )
-                    .then(function() {
-                        $('#modalAgregarClase').modal('hide');
-                    });   
+                        .then(function () {
+                            $('#modalAgregarClase').modal('hide');
+                        });
                 }
             }
-            
+
         });
-        
+
     }
 }
 
@@ -224,7 +219,7 @@ function clases() {
 // -----------------------------------------------------------Tabla Subclases---------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
 function subclases() {
-    $(function() {
+    $(function () {
         cargarTablaBT('#tablaSubClases');
     });
 
@@ -232,67 +227,76 @@ function subclases() {
     var $table = $('#tablaSubClases');
     var select = $('#botonOpciones');
 
-    $(function() {
-    $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
-        select.prop('disabled', !$table.bootstrapTable('getSelections').length);
-        // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
-    })
-    data = select.click(function () {
-        var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
-            auxIDSubC = row.id_subclase;
-            auxDesSubC = row.descripcion;
-            // console.log(auxIDSubC);
-        return row.id
+    $(function () {
+        $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+            select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+            // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
         })
-        // -------------------------------------------------------------------------------------------
-        // -------------------------------------Eliminar Clase----------------------------------------
-        // -------------------------------------------------------------------------------------------
-        $('#botonEliminarSubClase').click(function () {
-            swal({
-				title: "¿Estás seguro de eliminar la subclase " + auxIDSubC + " ?",
-				text: "La subclase no se podrá recuperar una vez hecha esta operación.",
-				icon: "warning",
-				buttons: true,
-				dangerMode: true,
-			}).then((willDelete) => {
-				if (willDelete) {
-					eliminarSubClase(auxIDSubC);
-				} 
-				else {
-					swal (
-                        'Sin cambios',
-                        'No se realizó ninguna operación.',
-                        'error'
-                    )
-				}
-			});
+        data = select.click(function () {
+            var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+                auxIDSubC = row.id_subclase;
+                auxDesSubC = row.descripcion;
+                // console.log(auxIDSubC);
+                return row.id
+            })
+            // -------------------------------------------------------------------------------------------
+            // -------------------------------------Eliminar Clase----------------------------------------
+            // -------------------------------------------------------------------------------------------
+            $('#botonEliminarSubClase').click(function () {
+                swal({
+                    title: "¿Estás seguro de eliminar la subclase " + auxIDSubC + " ?",
+                    text: "La subclase no se podrá recuperar una vez hecha esta operación.",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        eliminarSubClase(auxIDSubC);
+                    }
+                    else {
+                        swal(
+                            'Sin cambios',
+                            'No se realizó ninguna operación.',
+                            'error'
+                        )
+                    }
+                });
+            });
+            // -------------------------------------------------------------------------------------------
+            // -------------------------------Modal Clase----------------------------------------
+            // -------------------------------------------------------------------------------------------
+            // $('#botonAgregarSubClase').click(function () {
+            //     $('.modal-title').text('Agregar Subclase');
+            //     $('#idSubClase').val(auxIDSubC).removeAttr('disabled');
+            //     $('#formSubClase')[0].reset();
+            //     $('#accion').val('Agregar');
+            //     $('#guardarCambiosSubClase').text('Registrar Subclase');
+            // });
+
+            $('#botonActualizarSubClase').click(function () {
+                $('#modalAgregarSubClase').modal('show');
+                $('.modal-title').text('Editar Subclase');
+                $('#idSubClase').val(auxIDSubC).attr('disabled', 'disabled');
+                $('#idSubClase2').val(auxIDSubC);
+                $('#desSubClase').val(auxDesSubC);
+                $('#guardarCambiosSubClase').text('Editar Subclase');
+                $('#accion').val('Modificar');
+
+            });
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: ids
+            })
+            select.prop('disabled', true)
         });
-        // -------------------------------------------------------------------------------------------
-        // -------------------------------Modal Clase----------------------------------------
-        // -------------------------------------------------------------------------------------------
-        $('#botonAgregarSubClase').click(function() {
+
+        $('#botonAgregarSubClase').click(function () {
             $('.modal-title').text('Agregar Subclase');
             $('#idSubClase').val(auxIDSubC).removeAttr('disabled');
             $('#formSubClase')[0].reset();
             $('#accion').val('Agregar');
             $('#guardarCambiosSubClase').text('Registrar Subclase');
         });
-        $('#botonActualizarSubClase').click(function() {
-            $('#modalAgregarSubClase').modal('show');
-            $('.modal-title').text('Editar Subclase ' + auxIDSubC);
-            $('#idSubClase').val(auxIDSubC).attr('disabled','disabled');
-            $('#idSubClase2').val(auxIDSubC);
-            $('#desSubClase').val(auxDesSubC);
-            $('#guardarCambiosSubClase').text('Editar Subclase');
-            $('#accion').val('Modificar');
-            
-        });
-        $table.bootstrapTable('remove', {
-        field: 'id',
-        values: ids
-        })
-        select.prop('disabled', true)
-    })
 
     });
 
@@ -300,81 +304,81 @@ function subclases() {
     // -------------------------------------------------------------------------------------------
     // -------------------------------------Agregar SubClase-----------------------------------------
     // -------------------------------------------------------------------------------------------
-    $("#guardarCambiosSubclase").click(function() {
+    $("#guardarCambiosSubclase").click(function () {
         operarSubClase();
     });
 
 
     function operarSubClase() {
-        $(document).on('submit','#formSubClase', function(event){
+        $(document).on('submit', '#formSubClase', function (event) {
             event.preventDefault();
             parametros = formToObject($("form#formSubClase"));
             // console.log(parametros);
-                $.ajax({
-                    url:'php/operacionesSubClase.php',
-                    method:'POST',
-                    data: parametros, 
-                    success:function(data) {
-                        console.log(data);
-                        if(data.success) {
-                            swal(
-                                "La subclase fue operada con exito.", {
-                                    icon: "success",
-                                }
-                            )
-                            .then(function() {
-                                $('#modalAgregarSubClase').modal('hide');
-                                $('#tablaSubClases').bootstrapTable('refresh');
-                            });                   
-                        }
-                        else {
-                            swal (
-                                'Error de Operacion',
-                                'Hubo un error en la base de datos. ' + data.message,
-                                'error'
-                            )
-                            .then(function() {
-                                $('#modalAgregarSubClase').modal('hide');
-                            });   
-                        }
-                    }
-                });
-        });
-    }
-    
-    function eliminarSubClase(id) {
-        $.ajax({
-            url:'php/operacionesSubClase.php',
-            method:'POST',
-            data:{idSubClase: id, accion:"Eliminar"},
-            dataType:'',
-            success: function(data) {
-                // console.log(data);
-                if(data.success) {
-                    swal(
-                        "La subclase fue eliminada con exito.", {
+            $.ajax({
+                url: 'php/operacionesSubClase.php',
+                method: 'POST',
+                data: parametros,
+                success: function (data) {
+                    // console.log(data);
+                    if (data.success) {
+                        swal(
+                            "La subclase fue operada con exito.", {
                             icon: "success",
                         }
-                    )
-                    .then(function() {
-                        $('#modalAgregarSubClase').modal('hide');
-                        $('#tablaSubClases').bootstrapTable('refresh');
-                    });                     
+                        )
+                            .then(function () {
+                                $('#modalAgregarSubClase').modal('hide');
+                                $('#tablaSubClases').bootstrapTable('refresh');
+                            });
+                    }
+                    else {
+                        swal(
+                            'Error de Operacion',
+                            'Hubo un error en la base de datos. ' + data.message,
+                            'error'
+                        )
+                            .then(function () {
+                                $('#modalAgregarSubClase').modal('hide');
+                            });
+                    }
                 }
-                else { 
-                    swal (
+            });
+        });
+    }
+
+    function eliminarSubClase(id) {
+        $.ajax({
+            url: 'php/operacionesSubClase.php',
+            method: 'POST',
+            data: { idSubClase: id, accion: "Eliminar" },
+            dataType: '',
+            success: function (data) {
+                // console.log(data);
+                if (data.success) {
+                    swal(
+                        "La subclase fue eliminada con exito.", {
+                        icon: "success",
+                    }
+                    )
+                        .then(function () {
+                            $('#modalAgregarSubClase').modal('hide');
+                            $('#tablaSubClases').bootstrapTable('refresh');
+                        });
+                }
+                else {
+                    swal(
                         'Error de Operacion',
                         'Hubo un error en la base de datos. ' + data.message,
                         'error'
                     )
-                    .then(function() {
-                        $('#modalAgregarSubClase').modal('hide');
-                    });   
+                        .then(function () {
+                            $('#modalAgregarSubClase').modal('hide');
+                        });
                 }
             }
-            
+
         });
-        
+
     }
 }
 
@@ -383,14 +387,15 @@ function subclases() {
 // -----------------------------------------------------------------------------------------------------------------------------------
 
 function resguardos() {
-    $(function() {
+    $(function () {
         cargarTablaBT('#tablaResguardo');
     });
 
     var $table = $('#tablaResguardo');
     var select = $('#botonOpcionesResguardos');
 
-    $(function() {
+    $(function () {
+
         $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
             select.prop('disabled', !$table.bootstrapTable('getSelections').length);
         });
@@ -404,11 +409,13 @@ function resguardos() {
                 auxUniRes = row.unidad;
                 auxImporteRes = row.importe;
                 auxFechaCapRes = row.fecha_captura;
-            return row.id
+                return row.id
             });
+
             // -------------------------------------------------------------------------------------------
             // -------------------------------------Eliminar Resguardo------------------------------------
             // -------------------------------------------------------------------------------------------
+
             // $('#botonEliminarClase').click(function () {
             //     swal({
             // 		title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
@@ -432,13 +439,6 @@ function resguardos() {
             // -------------------------------------------------------------------------------------------
             // -------------------------------Modificar Modal Resguardo-----------------------------------
             // -------------------------------------------------------------------------------------------
-            // $('#botonAgregarClase').click(function() {
-            //     $('.modal-title').text('Agregar Clase');
-            //     $('#idClase').val(auxID).removeAttr('disabled');
-            //     $('#formClaseA')[0].reset();
-            //     $('#accion').val('Agregar');
-            //     $('#guardarCambiosClaseA').text('Registrar Clase');
-            // });
 
             // $('#botonActualizarClase').click(function() {
             //     $('#modalAgregarClase').modal('show');
@@ -449,7 +449,7 @@ function resguardos() {
             //     $('#subClases').val(auxSub);
             //     $('#guardarCambiosClaseA').text('Editar Clase');
             //     $('#accion').val('Modificar');
-                
+
             // });
 
             $table.bootstrapTable('remove', {
@@ -458,12 +458,116 @@ function resguardos() {
             });
             select.prop('disabled', true);
         });
+
+        // -------------------------------------------------------------------------------------------
+        // -------------------------------------Agregar Resguardo------------------------------------
+        // -------------------------------------------------------------------------------------------
+
+        $('#botonAgregarResguardo').click(function () {
+            $('.modal-title').text('Agregar Resguardo');
+            $('#formResguardo')[0].reset();
+            $('#accionRes').val('Agregar');
+            $('#guardarCambiosResguardos').text('Registrar Resguardo');
+            $("#fechaCapRes").val(hoy_input_date());
+            selectClasesAndSubClases()
+            $.post("php/refrescarSesion.php", function (data, status) {
+                $('#rpeRes').val(data.rpe);
+            });
+
+        });
+
     });
+
+    $("#guardarCambiosResguardos").click(function () {
+        operarResguardo();
+    });
+
+    function operarResguardo() {
+        $(document).on('submit', '#formResguardo', function (event) {
+            event.preventDefault();
+            parametros = formToObject($("form#formResguardo"));
+            // console.log(accion);
+            // console.log(parametros);
+            $.ajax({
+                url: 'php/operacionesResguardo.php',
+                method: 'POST',
+                data: parametros,
+                success: function (data) {
+                    // console.log(data);
+                    if (data.success) {
+                        swal(
+                            "El resguardo fue operado con exito.", {
+                            icon: "success",
+                        }
+                        )
+                            .then(function () {
+                                $('#modalOperarResguardo').modal('hide');
+                                $('#tablaResguardo').bootstrapTable('refresh');
+                            });
+                    }
+
+                    else {
+                        swal(
+                            'Error de Operacion',
+                            'Hubo un error en la base de datos. ' + data.message,
+                            'error'
+                        )
+                            .then(function () {
+                                $('#modalOperarResguardo').modal('hide');
+                            });
+                    }
+                }
+            });
+        });
+    }
+
+    function selectClasesAndSubClases() {
+        f_datos("php/clases.php", {}, function (data) {
+            $.each(data, function (key, value) {
+                $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
+            });
+
+            $("select#claseSelRes").trigger("change");
+
+        });
+
+        $("select#claseSelRes").change(function (event, valor) {
+            // console.log(valor);
+            f_datos("php/subclases.php", { id_clase: $("#claseSelRes option:selected").val() }, function (data) {
+                $(" #subClaseSelRes").empty();
+                $.each(data, function (key, value) {
+                    // console.log(value);
+                    $("#subClaseSelRes").append('<option value="' + value.id_subclase + '" >' + value.id_subclase + ' ' + value.descripcion + '</option>');
+                });
+
+            });
+
+        });
+    }
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------
 // --------------------------------------------------------Helpers, AjaxRequest-------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
+
+function f_datos(url, param, fn_cb, fn_err) {
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: param
+    })
+        .done(function (resp) {
+            if (!resp.success) {
+                alert(resp.message, 1);
+                if (fn_err)
+                    fn_err(resp.data);
+            }
+            else {
+                if (fn_cb)
+                    fn_cb(resp.data);
+            }
+        });
+}
 function formToObject(form) {
     var arrayForm = $(form).serializeArray();
     var objectForm = {};
@@ -471,6 +575,14 @@ function formToObject(form) {
         objectForm[obj.name] = obj.value;
     });
     return objectForm;
+}
+function hoy_input_date() {
+    var d = new Date();
+    var month = d.getMonth() + 1;
+    var day = d.getDate();
+    var year = d.getFullYear();
+    var today = year + '-' + (month < 10 ? '0' : '') + month + '-' + (day < 10 ? '0' : '') + day;
+    return today;
 }
 
 
@@ -480,22 +592,22 @@ function ajaxRequestCl(params) {
     $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
         // console.log(res);
         params.success(res);
-    });	
+    });
 }
 
 function ajaxRequestSub(params) {
     var url = 'php/Select_all_subclases.php';
     $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
         params.success(res);
-    });	
+    });
 }
 
 function ajaxRequestRes(params) {
     var url = 'php/selectAllResguardos.php';
     $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
-        console.log(res);
         params.success(res);
-    });	
+
+    });
 }
 
 function cargarTablaBT(tablaDinamica) {

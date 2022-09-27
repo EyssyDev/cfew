@@ -1,4 +1,3 @@
-
 <div class="container" id="cluster1">
     <h1>Bienvenidos al Sistema de Control de Resguardo</h1>
     <h4>de Bienes Muebles de Poca Cuantía</h4>
