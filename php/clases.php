@@ -8,6 +8,5 @@ else
 
 $resArray = getArraySQL($sql, "bmpc", true);
 header('Content-type: application/json; charset=utf-8');
-echo json_encode($resArray);
-	
+echo json_encode($resArray);	
 ?>

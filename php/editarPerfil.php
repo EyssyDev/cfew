@@ -21,5 +21,5 @@ $pass = (isset($_POST['pass1'])) ? $_POST['pass1']: '';
         // }
     }
     header('Content-type: application/json; charset=utf-8');
-    echo json_encode($resultado1["data"]+$update);
+    echo json_encode($update);
 ?>

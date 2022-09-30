@@ -8,7 +8,7 @@ var fechaHoy = fecha.toLocaleDateString() + " a la(s) " + fecha.toLocaleTimeStri
     minute: "2-digit",
 });
 // variables globales de reguardos
-var auxIdRes, auxDesRes, auxSerieRes, auxCanRes, auxUniRes, auxImporteRes, auxFechaCapRes = "";
+var auxIdRes, auxDesRes, auxSerieRes, auxCanRes, auxUniRes, auxImporteRes, auxFechaCapRes, auxModelRes, auxMarcRes, auxNumRes, auxFechaFactRes, auxRFCRes, auxPosRes, auxClasRes, auxSubRes = "";
 
 $(document).ready(function () {
     clases();
@@ -26,18 +26,20 @@ function clases() {
     // -----------------------------------------------------------------------------------------------------------------------------------
     $(function () {
         cargarTablaBT('#tablaClases');
-        multiselectClases();
-    });
 
+    });
+    // ------------------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------FUNCION select Row BootstrapTable para Editar o eliminar---------------------------------
+    // ---------------------------------------------------------------------------------------------------------------------------------
     var $table = $('#tablaClases');
-    var select = $('#botonOpciones');
+    var select = $('#botonOpcionesCla');
 
     $(function () {
         $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
             select.prop('disabled', !$table.bootstrapTable('getSelections').length);
             // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
         })
-        data = select.click(function () {
+        select.click(function () {
             var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
                 auxID = row.id_clase;
                 auxDes = row.descripcion;
@@ -45,113 +47,84 @@ function clases() {
 
                 return row.id
             })
-            // $.each(items, function (i, item) {
-            //     $('#multipleSelect').append($('<option>', { 
-            //         value: item.value,
-            //         text : item.text 
-            //     }));
-            // });
-            // // -------------------------------------------------------------------------------------------
-            // -------------------------------------Eliminar Clase----------------------------------------
-            // -------------------------------------------------------------------------------------------
-            $('#botonEliminarClase').click(function () {
-                swal({
-                    title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
-                    text: "La clase no se podrá recuperar una vez hecha esta operación.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        eliminarClase(auxID);
-                    }
-                    else {
-                        swal(
-                            'Sin cambios',
-                            'No se realizó ninguna operación.',
-                            'error'
-                        )
-                    }
-                });
-            });
-            // -------------------------------------------------------------------------------------------
-            // -------------------------------Modificar Modal Clase----------------------------------------
-            // -------------------------------------------------------------------------------------------
-
-            $('#botonActualizarClase').click(function () {
-                $('#modalAgregarClase').modal('show');
-                $('.modal-title').text('Editar Clase');
-                $('#idClase').val(auxID).attr('disabled', 'disabled');
-                $('#idClase2').val(auxID);
-                $('#desClase').val(auxDes);
-                $('#multipleSelect').val(auxSub);
-                $('#guardarCambiosClaseA').text('Editar Clase');
-                $('#accion').val('Modificar');
-
-            });
             $table.bootstrapTable('remove', {
                 field: 'id',
                 values: ids
             })
             select.prop('disabled', true)
         });
-
-        $('#botonAgregarClase').click(function () {
-            $('.modal-title').text('Agregar Clase');
-            $('#idClase').val(auxID).removeAttr('disabled');
-            $('#formClaseA')[0].reset();
-            $('#accion').val('Agregar');
-            $('#guardarCambiosClaseA').text('Registrar Clase');
-        });
-
     });
-
     // -------------------------------------------------------------------------------------------
-    // -------------------------------------Multiselect---------------------------------------
+    // -------------------------------CRUD Modal Clases----------------------------------------
     // -------------------------------------------------------------------------------------------
 
-    function multiselectClases() {
-        VirtualSelect.init({
-            ele: '#multipleSelect',
-            maxValues: 4,
-            multiple: true,
-            // selectedValue: [auxSub]
+    $('#botonAgregarClase').click(function () {
+        $('.modal-title').text('Agregar Clase');
+        $('#idClase').val(auxID).removeAttr('disabled');
+        $('#formClaseA')[0].reset();
+        $('#accion').val('Agregar');
+        $('#guardarCambiosClaseA').text('Registrar Clase');
+        multiselectClases();
+
+        // -------------------------------------------------------------------------------------------------------------
+        // ------------------------------Función para el multiselect separacion de OR |---------------------------------
+        multiSplitOr();
+    });
+    $('#botonActualizarClase').click(function () {
+        $('#modalAgregarClase').modal('show');
+        $('.modal-title').text('Editar Clase');
+        $('#idClase').val(auxID).attr('disabled', 'disabled');
+        $('#idClase2').val(auxID);
+        $('#desClase').val(auxDes);
+        $('#multipleSelect').val(auxSub);
+        $('#guardarCambiosClaseA').text('Editar Clase');
+        $('#accion').val('Modificar');
+        $(".vscomp-value").val("data-tooltip", auxSub)
+        multiselectClases();
+        // -------------------------------------------------------------------------------------------------------------
+        // ------------------------------Función para el multiselect separacion de OR |---------------------------------
+        multiSplitOr();
+    });
+    $('#botonEliminarClase').click(function () {
+        swal({
+            title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
+            text: "La clase no se podrá recuperar una vez hecha esta operación.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                eliminarClase(auxID);
+            }
+            else {
+                swal(
+                    'Sin cambios',
+                    'No se realizó ninguna operación.',
+                    'error'
+                )
+            }
         });
-        // console.log(auxSub);
-        getAllSubclasesById();
-    }
-
-
-    function getAllSubclasesById() {
-        $.get("php/multiselectClases.php", function (data, status) {
-
-            $.each(data, function (key, valor) {
-                document.querySelector("#multipleSelect").addOption({
-                    value: valor.id_subclase,
-                    label: valor.id_subclase
-                })
-            });
-
-        });
-    }
+    });
     // -------------------------------------------------------------------------------------------
-    // -------------------------------------Agregar Clase----------------------------------------
+    // -------------------------------FUNCIONES CRUD Modal Clases----------------------------------------
     // -------------------------------------------------------------------------------------------
     $("#guardarCambiosClaseA").click(function () {
+
         operarClase();
+
     });
     function operarClase() {
-        $(document).on('submit', '#formClaseA', function (event) {
+        $('#formClaseA').off('submit').on('submit', function (event) {
+            console.log("iter");
             event.preventDefault();
-            parametros = formToObject($("form#formClaseA"));
-            // console.log(accion);
+            parametros = formToObject($("#formClaseA"));
             // console.log(parametros);
             $.ajax({
                 url: 'php/operacionesClase.php',
                 method: 'POST',
                 data: parametros,
                 success: function (data) {
-                    // console.log(data);
+                    console.log(data);
                     if (data.success) {
                         swal(
                             "La clase fue operada con exito.", {
@@ -167,17 +140,21 @@ function clases() {
                     else {
                         swal(
                             'Error de Operacion',
-                            'Hubo un error en la base de datos. ' + data.message,
+                            data.message,
                             'error'
                         )
                             .then(function () {
-                                $('#modalAgregarClase').modal('hide');
+
+                                $('#tablaClases').bootstrapTable('refresh');
                             });
                     }
                 }
             });
         });
+
     }
+
+
 
     function eliminarClase(id) {
         $.ajax({
@@ -209,6 +186,40 @@ function clases() {
                         });
                 }
             }
+        });
+    }
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------------Multiselect---------------------------------------
+    // -------------------------------------------------------------------------------------------
+
+    function multiselectClases() {
+        VirtualSelect.init({
+            ele: '#multipleSelect',
+            maxValues: 4,
+            multiple: true,
+            // selectedValue: [auxSub]
+        });
+        // console.log(auxSub);
+        getAllSubclasesById();
+    }
+
+    function multiSplitOr() {
+        $('#multipleSelect').change(function () {
+            var sub = this.value.toString();
+            var splitOr = sub.replace(/\,+/g, '|');
+            //  console.log(splitOr);
+            $(".vscomp-hidden-input").attr("value", splitOr);
+        });
+    }
+    function getAllSubclasesById() {
+        $.get("php/multiselectClases.php", function (data, status) {
+
+            $.each(data, function (key, valor) {
+                document.querySelector("#multipleSelect").addOption({
+                    value: valor.id_subclase,
+                    label: valor.id_subclase
+                })
+            });
 
         });
 
@@ -225,94 +236,83 @@ function subclases() {
 
 
     var $table = $('#tablaSubClases');
-    var select = $('#botonOpciones');
+    var select = $('#botonOpcionesSub');
 
     $(function () {
         $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
             select.prop('disabled', !$table.bootstrapTable('getSelections').length);
             // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
         })
-        data = select.click(function () {
+        select.click(function () {
             var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
                 auxIDSubC = row.id_subclase;
                 auxDesSubC = row.descripcion;
                 // console.log(auxIDSubC);
                 return row.id
             })
-            // -------------------------------------------------------------------------------------------
-            // -------------------------------------Eliminar Clase----------------------------------------
-            // -------------------------------------------------------------------------------------------
-            $('#botonEliminarSubClase').click(function () {
-                swal({
-                    title: "¿Estás seguro de eliminar la subclase " + auxIDSubC + " ?",
-                    text: "La subclase no se podrá recuperar una vez hecha esta operación.",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                }).then((willDelete) => {
-                    if (willDelete) {
-                        eliminarSubClase(auxIDSubC);
-                    }
-                    else {
-                        swal(
-                            'Sin cambios',
-                            'No se realizó ninguna operación.',
-                            'error'
-                        )
-                    }
-                });
-            });
-            // -------------------------------------------------------------------------------------------
-            // -------------------------------Modal Clase----------------------------------------
-            // -------------------------------------------------------------------------------------------
-            // $('#botonAgregarSubClase').click(function () {
-            //     $('.modal-title').text('Agregar Subclase');
-            //     $('#idSubClase').val(auxIDSubC).removeAttr('disabled');
-            //     $('#formSubClase')[0].reset();
-            //     $('#accion').val('Agregar');
-            //     $('#guardarCambiosSubClase').text('Registrar Subclase');
-            // });
 
-            $('#botonActualizarSubClase').click(function () {
-                $('#modalAgregarSubClase').modal('show');
-                $('.modal-title').text('Editar Subclase');
-                $('#idSubClase').val(auxIDSubC).attr('disabled', 'disabled');
-                $('#idSubClase2').val(auxIDSubC);
-                $('#desSubClase').val(auxDesSubC);
-                $('#guardarCambiosSubClase').text('Editar Subclase');
-                $('#accion').val('Modificar');
-
-            });
             $table.bootstrapTable('remove', {
                 field: 'id',
                 values: ids
             })
             select.prop('disabled', true)
         });
-
-        $('#botonAgregarSubClase').click(function () {
-            $('.modal-title').text('Agregar Subclase');
-            $('#idSubClase').val(auxIDSubC).removeAttr('disabled');
-            $('#formSubClase')[0].reset();
-            $('#accion').val('Agregar');
-            $('#guardarCambiosSubClase').text('Registrar Subclase');
-        });
-
     });
 
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------------CRUD SubClases-----------------------------------------
+    // -------------------------------------------------------------------------------------------
 
-    // -------------------------------------------------------------------------------------------
-    // -------------------------------------Agregar SubClase-----------------------------------------
-    // -------------------------------------------------------------------------------------------
+    $('#botonAgregarSubClase').click(function () {
+        $('.modal-title').text('Agregar Subclase');
+        $('#idSubClase').val(auxIDSubC).removeAttr('disabled');
+        $('#formSubClase')[0].reset();
+        $('#accion').val('Agregar');
+        $('#guardarCambiosSubclase').text('Registrar Subclase');
+    });
     $("#guardarCambiosSubclase").click(function () {
         operarSubClase();
     });
+    $('#botonActualizarSubClase').click(function () {
+        $('#modalAgregarSubClase').modal('show');
+        $('.modal-title').text('Editar Subclase');
+        $('#idSubClase').val(auxIDSubC).attr('disabled', 'disabled');
+        $('#idSubClase2').val(auxIDSubC);
+        $('#desSubClase').val(auxDesSubC);
+        $('#guardarCambiosSubclase').text('Editar Subclase');
+        $('#accion').val('Modificar');
 
+    });
+    $('#botonEliminarSubClase').click(function () {
+        swal({
+            title: "¿Estás seguro de eliminar la subclase " + auxIDSubC + " ?",
+            text: "La subclase no se podrá recuperar una vez hecha esta operación.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                eliminarSubClase(auxIDSubC);
+            }
+            else {
+                swal(
+                    'Sin cambios',
+                    'No se realizó ninguna operación.',
+                    'error'
+                )
+            }
+        });
+    });
+
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------funciones CRUD Modal SubClases----------------------------------------
+    // -------------------------------------------------------------------------------------------
 
     function operarSubClase() {
-        $(document).on('submit', '#formSubClase', function (event) {
+        $('#formSubClase').off('submit').on('submit', function (event) {
+            console.log("iter");
             event.preventDefault();
-            parametros = formToObject($("form#formSubClase"));
+            parametros = formToObject($("#formSubClase"));
             // console.log(parametros);
             $.ajax({
                 url: 'php/operacionesSubClase.php',
@@ -387,6 +387,16 @@ function subclases() {
 // -----------------------------------------------------------------------------------------------------------------------------------
 
 function resguardos() {
+    f_datos("php/areas.php", {}, function (data) {
+        console.log(data[0]["nombre_corto"]);
+        $("#area").empty();
+        $.each(data, function (key, value) {
+            $("#area").append('<option value="' + value.clave + '" >' + value.nombre_corto + '</option>');
+        });
+        $("select#area").val(data);
+        $("#area").trigger("change");
+    });
+
     $(function () {
         cargarTablaBT('#tablaResguardo');
     });
@@ -400,92 +410,117 @@ function resguardos() {
             select.prop('disabled', !$table.bootstrapTable('getSelections').length);
         });
 
-        data = select.click(function () {
+        select.click(function () {
             var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
                 auxIdRes = row.id_bien;
-                auxDesRes = row.descripcion;
-                auxSerieRes = row.serie;
-                auxCanRes = row.cantidad;
-                auxUniRes = row.unidad;
-                auxImporteRes = row.importe;
-                auxFechaCapRes = row.fecha_captura;
                 return row.id
             });
-
-            // -------------------------------------------------------------------------------------------
-            // -------------------------------------Eliminar Resguardo------------------------------------
-            // -------------------------------------------------------------------------------------------
-
-            // $('#botonEliminarClase').click(function () {
-            //     swal({
-            // 		title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
-            // 		text: "La clase no se podrá recuperar una vez hecha esta operación.",
-            // 		icon: "warning",
-            // 		buttons: true,
-            // 		dangerMode: true,
-            // 	}).then((willDelete) => {
-            // 		if (willDelete) {
-            // 			eliminarClase(auxID);
-            // 		} 
-            // 		else {
-            // 			swal (
-            //                 'Sin cambios',
-            //                 'No se realizó ninguna operación.',
-            //                 'error'
-            //             )
-            // 		}
-            // 	});
-            // });
-            // -------------------------------------------------------------------------------------------
-            // -------------------------------Modificar Modal Resguardo-----------------------------------
-            // -------------------------------------------------------------------------------------------
-
-            // $('#botonActualizarClase').click(function() {
-            //     $('#modalAgregarClase').modal('show');
-            //     $('.modal-title').text('Editar Clase');
-            //     $('#idClase').val(auxID).attr('disabled','disabled');
-            //     $('#idClase2').val(auxID);
-            //     $('#desClase').val(auxDes);
-            //     $('#subClases').val(auxSub);
-            //     $('#guardarCambiosClaseA').text('Editar Clase');
-            //     $('#accion').val('Modificar');
-
-            // });
-
             $table.bootstrapTable('remove', {
                 field: 'id',
                 values: ids
             });
             select.prop('disabled', true);
         });
+    });
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------------Funciones Resguardos-------------------------------------
+    // -------------------------------------------------------------------------------------------
 
-        // -------------------------------------------------------------------------------------------
-        // -------------------------------------Agregar Resguardo------------------------------------
-        // -------------------------------------------------------------------------------------------
-
-        $('#botonAgregarResguardo').click(function () {
-            $('.modal-title').text('Agregar Resguardo');
-            $('#formResguardo')[0].reset();
-            $('#accionRes').val('Agregar');
-            $('#guardarCambiosResguardos').text('Registrar Resguardo');
-            $("#fechaCapRes").val(hoy_input_date());
-            selectClasesAndSubClases()
-            $.post("php/refrescarSesion.php", function (data, status) {
-                $('#rpeRes').val(data.rpe);
-            });
-
+    function datosBien() {
+        $.get("php/refrescarSesion.php", function (data, status) {
+            $('#rpeRes').val(data.rpe);
+            $('#rpeRes2').val(data.rpe);
         });
+    }
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------------CRUD Resguardos-------------------------------------
+    // -------------------------------------------------------------------------------------------
+    $('#botonAgregarResguardo').click(function () {
+        datosBien()
+        $('.modal-title').text('Agregar Resguardo');
+        $('#formResguardo')[0].reset();
+        $('#accionRes').val('Agregar');
+        $('#guardarCambiosResguardos').text('Registrar Resguardo');
+        $("#fechaCapRes").val(hoy_input_date());
+        selectClasesAndSubClases();
 
     });
 
     $("#guardarCambiosResguardos").click(function () {
+        // Es el unico boton en castear la funcion, al hacer un console.log, solo imprime una vez.
         operarResguardo();
     });
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------Modificar Modal Resguardo-----------------------------------
+    // -------------------------------------------------------------------------------------------
 
+    $('#botonEditarResguardo').click(function () {
+        datosBien()
+        $('#modalOperarResguardo').modal('show');
+        $('.modal-title').text('Editar resguardo');
+        $('#guardarCambiosResguardos').text('Editar resguardo');
+        $('#accionRes').val('Modificar');
+        $.post("php/selectById_resguardos.php", { id_bien: auxIdRes }, function (data, status) {
+            // console.log(data);
+            auxCanRes = data.cantidad;
+            auxClasRes = data.clase;
+            auxDesRes = data.descripcion;
+            auxFechaFactRes = data.fecha_factura;
+            auxImporteRes = data.importe;
+            auxMarcRes = data.marca;
+            auxModelRes = data.modelo;
+            auxNumRes = data.numero;
+            auxPosRes = data.posicion;
+            auxRFCRes = data.rfc;
+            auxSerieRes = data.serie;
+            auxSubRes = data.subclase;
+            auxUniRes = data.unidad;
+            auxFechaCapRes = data.fecha_captura;
+            $("#desRes").val(auxDesRes);
+            $("#marcaRes").val(auxMarcRes);
+            $("#modeloRes").val(auxModelRes);
+            $("#serieRes").val(auxSerieRes);
+            $("#unidadSelRes").val(auxUniRes);
+            $("#cantidadRes").val(auxCanRes);
+            $("#numResFac").val(auxNumRes);
+            $("#rfcResFac").val(auxRFCRes);
+            $("#fechaResFac").val(auxFechaFactRes);
+            $("#fechaCapRes").val(auxFechaCapRes);
+            $("#posicionResFac").val(auxPosRes);
+            $("#claseSelRes").val(auxClasRes);
+            $("select#claseSelRes").trigger("change", auxSubRes);
+        });
+        selectClasesAndSubClases();
+    });
+    $('#botonEliminarResguardo').click(function () {
+        swal({
+            title: "¿Estás seguro de eliminar la clase " + auxIdRes + " ?",
+            text: "El resguardo no se podrá recuperar una vez hecha esta operación.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                eliminarResguardo(auxIdRes);
+            }
+            else {
+                swal(
+                    'Sin cambios',
+                    'No se realizó ninguna operación.',
+                    'error'
+                )
+            }
+        });
+    });
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
+    // -------------------------------------------------------------------------------------------
     function operarResguardo() {
-        $(document).on('submit', '#formResguardo', function (event) {
+        // Dentro de la funcion, se llega a iterar.
+        $('#formResguardo').off("submit").on("submit", function (event) {
             event.preventDefault();
-            parametros = formToObject($("form#formResguardo"));
+            parametros = formToObject($("#formResguardo"));
+            console.log(parametros);
             // console.log(accion);
             // console.log(parametros);
             $.ajax({
@@ -498,8 +533,7 @@ function resguardos() {
                         swal(
                             "El resguardo fue operado con exito.", {
                             icon: "success",
-                        }
-                        )
+                        })
                             .then(function () {
                                 $('#modalOperarResguardo').modal('hide');
                                 $('#tablaResguardo').bootstrapTable('refresh');
@@ -521,20 +555,51 @@ function resguardos() {
         });
     }
 
+    function eliminarResguardo(id) {
+        $.ajax({
+            url: 'php/operacionesResguardo.php',
+            method: 'POST',
+            data: { idBien: id, accionRes: "Eliminar" },
+            success: function (data) {
+                // console.log(data);
+                if (data.success) {
+                    swal(
+                        "El reguardo fue eliminado con exito.", {
+                        icon: "success",
+                    }
+                    )
+                        .then(function () {
+                            $('#modalOperarResguardo').modal('hide');
+                            $('#tablaResguardo').bootstrapTable('refresh');
+                        });
+                }
+                else {
+                    swal(
+                        'Error de Operacion',
+                        'Hubo un error en la base de datos. ' + data.message,
+                        'error'
+                    )
+                        .then(function () {
+                            $('#modalOperarResguardo').modal('hide');
+                        });
+                }
+            }
+        });
+    }
+
     function selectClasesAndSubClases() {
         f_datos("php/clases.php", {}, function (data) {
+            $(" #claseSelRes").empty();
             $.each(data, function (key, value) {
                 $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
             });
-
             $("select#claseSelRes").trigger("change");
-
         });
 
         $("select#claseSelRes").change(function (event, valor) {
             // console.log(valor);
             f_datos("php/subclases.php", { id_clase: $("#claseSelRes option:selected").val() }, function (data) {
-                $(" #subClaseSelRes").empty();
+                $("#subClaseSelRes").empty();
                 $.each(data, function (key, value) {
                     // console.log(value);
                     $("#subClaseSelRes").append('<option value="' + value.id_subclase + '" >' + value.id_subclase + ' ' + value.descripcion + '</option>');
@@ -557,6 +622,7 @@ function f_datos(url, param, fn_cb, fn_err) {
         data: param
     })
         .done(function (resp) {
+            // console.log(resp);
             if (!resp.success) {
                 alert(resp.message, 1);
                 if (fn_err)
@@ -569,7 +635,7 @@ function f_datos(url, param, fn_cb, fn_err) {
         });
 }
 function formToObject(form) {
-    var arrayForm = $(form).serializeArray();
+    arrayForm = $(form).serializeArray();
     var objectForm = {};
     arrayForm.forEach(function (obj, index) {
         objectForm[obj.name] = obj.value;
@@ -606,7 +672,6 @@ function ajaxRequestRes(params) {
     var url = 'php/selectAllResguardos.php';
     $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
         params.success(res);
-
     });
 }
 
