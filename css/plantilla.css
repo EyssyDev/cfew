@@ -8,7 +8,9 @@ footer {
     width: 100%;
     height: 90px;
 }
-
+.btn-info{
+    color: #fff;
+}
 .container-respons {
     min-height: calc(100vh - 90px);
 }
@@ -24,7 +26,7 @@ footer {
 }
 
 #navBarCustom {
-    background-color: #00996a;
+    background-color: #008E5A;
     height: 100%;
 }
 

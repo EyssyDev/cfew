@@ -11,7 +11,7 @@
                     <h5 class="modal-title" id="exampleModalLabel">Agregar Resguardo</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form class="form-horizontal" role="form" accept-charset="UTF-8" name="formResguardo" id="formResguardo" method="POST">
+                <form class="form-horizontal" role="form" accept-charset="UTF-8" name="formResguardo" id="formResguardo" method="POST" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="container-fluid">
                             <table class="table table-condensed">
@@ -104,7 +104,7 @@
                                         </tr>
                                         <tr>
                                             <td><label class="control-label"><strong>Archivo: </strong></span></td>
-                                            <td><input class="form-control" type="file" id="formFile"></td>
+                                            <td><input class="form-control" type="file" id="formFile" name="formFile" accept=”.pdf”></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -115,6 +115,7 @@
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-success" id="guardarCambiosResguardos">Registrar Resguardo</button>
                             <input type="hidden" id="rpeRes2" name="rpeRes2" value="" />
+                            <input type="hidden" id="idBien" name="idBien" value="" />
                             <input type="hidden" id="accionRes" name="accionRes" value="Agregar" />
                         </div>
                     </div>
@@ -140,10 +141,10 @@
                     <form role="formTopRes" id="formFiltro">
                         <div class="row">
                             <div class="col-xs-12 col-md-4 col-lg-4">
-                            <select name="area" id="area" class="form-control" title="Seleccione la Zona"></select>
+                            <select name="area" id="areaR" class="form-control" title="Seleccione la Zona"></select>
                             </div>
                             <div class="col-xs-12 col-md-4 col-lg-4">
-                            <select name="depto" id="depto" class="form-control" title="Seleccione la especialidad"></select>
+                            <select name="depto" id="deptoR" class="form-control" title="Seleccione la especialidad"></select>
                             </div>
                             <div class="col-xs-12 col-md-4 col-lg-4">
                             <select name="rpe" id="Panelrpe" class="form-control" title="Seleccione el RPE"></select>

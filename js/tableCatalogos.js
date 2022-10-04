@@ -2,20 +2,30 @@
 var auxID, auxDes, auxSub = "";
 // variables globales de subclases
 var auxIDSubC, auxDesSubC = "";
+
 var fecha = new Date();
 var fechaHoy = fecha.toLocaleDateString() + " a la(s) " + fecha.toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
 });
+
 // variables globales de reguardos
-var auxIdRes, auxDesRes, auxSerieRes, auxCanRes, auxUniRes, auxImporteRes, auxFechaCapRes, auxModelRes, auxMarcRes, auxNumRes, auxFechaFactRes, auxRFCRes, auxPosRes, auxClasRes, auxSubRes = "";
+var auxResguardos;
+// variables globales de reguardos bajas
+var auxResguardosBajas;
 
 $(document).ready(function () {
     clases();
     subclases();
     resguardos();
+    reportesBajas()
 });
 
+
+$.get("php/refrescarSesion.php", function (data, status) {
+    dataUser = data;
+    // console.log(dataUser);
+});
 // -----------------------------------------------------------------------------------------------------------------------------------
 // -----------------------------------------------------------Tabla Clases------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
@@ -230,6 +240,7 @@ function clases() {
 // -----------------------------------------------------------Tabla Subclases---------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
 function subclases() {
+
     $(function () {
         cargarTablaBT('#tablaSubClases');
     });
@@ -310,7 +321,6 @@ function subclases() {
 
     function operarSubClase() {
         $('#formSubClase').off('submit').on('submit', function (event) {
-            console.log("iter");
             event.preventDefault();
             parametros = formToObject($("#formSubClase"));
             // console.log(parametros);
@@ -387,18 +397,45 @@ function subclases() {
 // -----------------------------------------------------------------------------------------------------------------------------------
 
 function resguardos() {
-    f_datos("php/areas.php", {}, function (data) {
-        console.log(data[0]["nombre_corto"]);
-        $("#area").empty();
-        $.each(data, function (key, value) {
-            $("#area").append('<option value="' + value.clave + '" >' + value.nombre_corto + '</option>');
-        });
-        $("select#area").val(data);
-        $("#area").trigger("change");
-    });
+    
 
+    f_datos("php/areas.php", {}, function (data) {
+        $("#areaR").empty();
+       
+        $.each(data, function (key, value) {
+            $("#areaR").append('<option value="' + value.clave + '" >' + value.nombre_corto + '</option>');
+        });
+        $("#areaR").val(dataUser.area);
+        $("#areaR").trigger("change");
+    });
+    $("#areaR").off("change").on("change",function(e){
+			// if ($table) tableapi.clear().draw('page');
+			f_datos("php/deptos.php", {}, function(datEsp){
+                // console.log(datEsp);
+				$("#deptoR").empty();
+				$.each(datEsp, function( key, value ) {
+					$("#deptoR").append('<option value="'+value.cl_cenco+'" >'+value.Descripcion+'</option>');
+				});
+				$("#deptoR").trigger("change");
+			});
+		});
+    $("#deptoR").off("change").on("change",function(e){
+        f_datos("php/empleados.php", {area:$("#areaR").val(),depto:$("#deptoR").val()}, function(datEmp){
+            // console.log(datEmp);
+            $("#Panelrpe").empty();
+            $.each(datEmp, function( key, value ) {
+                $("#Panelrpe").append('<option value="'+value.rpe+'" ><pre>'+value.rpe+" "+value.nombre+'</pre></option>');
+            });
+            
+            // if($table)
+            // 	$("#Panelrpe").trigger("change");
+            // else
+            // 	cargaBien($("#Panelrpe").val());
+        });
+    });
+      
     $(function () {
-        cargarTablaBT('#tablaResguardo');
+    cargarTablaBT('#tablaResguardo');
     });
 
     var $table = $('#tablaResguardo');
@@ -412,7 +449,8 @@ function resguardos() {
 
         select.click(function () {
             var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
-                auxIdRes = row.id_bien;
+            // console.log(row);
+            auxResguardos = row;
                 return row.id
             });
             $table.bootstrapTable('remove', {
@@ -422,86 +460,36 @@ function resguardos() {
             select.prop('disabled', true);
         });
     });
-    // -------------------------------------------------------------------------------------------
-    // -------------------------------------Funciones Resguardos-------------------------------------
-    // -------------------------------------------------------------------------------------------
 
-    function datosBien() {
-        $.get("php/refrescarSesion.php", function (data, status) {
-            $('#rpeRes').val(data.rpe);
-            $('#rpeRes2').val(data.rpe);
-        });
-    }
+    // function datosBien() {
+       
+    // };
+   
     // -------------------------------------------------------------------------------------------
     // -------------------------------------CRUD Resguardos-------------------------------------
     // -------------------------------------------------------------------------------------------
     $('#botonAgregarResguardo').click(function () {
-        datosBien()
-        $('.modal-title').text('Agregar Resguardo');
-        $('#formResguardo')[0].reset();
-        $('#accionRes').val('Agregar');
-        $('#guardarCambiosResguardos').text('Registrar Resguardo');
-        $("#fechaCapRes").val(hoy_input_date());
-        selectClasesAndSubClases();
-
+        $('#rpeRes').val(dataUser.rpe);
+        $('#rpeRes2').val(dataUser.rpe);
+        agregar();
     });
-
     $("#guardarCambiosResguardos").click(function () {
-        // Es el unico boton en castear la funcion, al hacer un console.log, solo imprime una vez.
         operarResguardo();
     });
-    // -------------------------------------------------------------------------------------------
-    // -------------------------------Modificar Modal Resguardo-----------------------------------
-    // -------------------------------------------------------------------------------------------
-
     $('#botonEditarResguardo').click(function () {
-        datosBien()
-        $('#modalOperarResguardo').modal('show');
-        $('.modal-title').text('Editar resguardo');
-        $('#guardarCambiosResguardos').text('Editar resguardo');
-        $('#accionRes').val('Modificar');
-        $.post("php/selectById_resguardos.php", { id_bien: auxIdRes }, function (data, status) {
-            // console.log(data);
-            auxCanRes = data.cantidad;
-            auxClasRes = data.clase;
-            auxDesRes = data.descripcion;
-            auxFechaFactRes = data.fecha_factura;
-            auxImporteRes = data.importe;
-            auxMarcRes = data.marca;
-            auxModelRes = data.modelo;
-            auxNumRes = data.numero;
-            auxPosRes = data.posicion;
-            auxRFCRes = data.rfc;
-            auxSerieRes = data.serie;
-            auxSubRes = data.subclase;
-            auxUniRes = data.unidad;
-            auxFechaCapRes = data.fecha_captura;
-            $("#desRes").val(auxDesRes);
-            $("#marcaRes").val(auxMarcRes);
-            $("#modeloRes").val(auxModelRes);
-            $("#serieRes").val(auxSerieRes);
-            $("#unidadSelRes").val(auxUniRes);
-            $("#cantidadRes").val(auxCanRes);
-            $("#numResFac").val(auxNumRes);
-            $("#rfcResFac").val(auxRFCRes);
-            $("#fechaResFac").val(auxFechaFactRes);
-            $("#fechaCapRes").val(auxFechaCapRes);
-            $("#posicionResFac").val(auxPosRes);
-            $("#claseSelRes").val(auxClasRes);
-            $("select#claseSelRes").trigger("change", auxSubRes);
-        });
-        selectClasesAndSubClases();
+       
+        modificar();
     });
     $('#botonEliminarResguardo').click(function () {
         swal({
-            title: "¿Estás seguro de eliminar la clase " + auxIdRes + " ?",
+            title: "¿Estás seguro de eliminar la clase " + auxResguardos.id_bien + " ?",
             text: "El resguardo no se podrá recuperar una vez hecha esta operación.",
             icon: "warning",
             buttons: true,
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
-                eliminarResguardo(auxIdRes);
+                eliminarResguardo(auxResguardos.id_bien);
             }
             else {
                 swal(
@@ -555,6 +543,77 @@ function resguardos() {
         });
     }
 
+    function agregar() {
+        f_datos("php/clases.php", {}, function (data) {
+            $(" #claseSelRes").empty();
+            $.each(data, function (key, value) {
+                $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
+            });
+            $('.modal-title').text('Agregar Resguardo');
+            $('#formResguardo')[0].reset();
+            $('#accionRes').val('Agregar');
+            $('#guardarCambiosResguardos').text('Registrar Resguardo');
+            $("#fechaCapRes").val(hoy_input_date());
+            $("select#claseSelRes").trigger("change");
+        });
+
+        $("select#claseSelRes").change(function (event, valor) {
+            // console.log(valor);
+            f_datos("php/subclases.php", { id_clase: $("#claseSelRes option:selected").val() }, function (data) {
+                $("#subClaseSelRes").empty();
+                $.each(data, function (key, value) {
+                    // console.log(value);
+                    $("#subClaseSelRes").append('<option value="' + value.id_subclase + '" >' + value.id_subclase + ' ' + value.descripcion + '</option>');
+                });
+
+            });
+
+        });
+    }
+        function modificar() {
+        f_datos("php/clases.php", {}, function (data) {
+            $(" #claseSelRes").empty();
+            $.each(data, function (key, value) {
+                $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
+            });
+            $('#rpeRes').val(auxResguardos.rpe);
+            $('#rpeRes2').val(auxResguardos.rpe);
+            $('#modalOperarResguardo').modal('show');
+            $('.modal-title').text('Editar resguardo');
+            $('#guardarCambiosResguardos').text('Editar resguardo');
+            $('#accionRes').val('Modificar');
+            $("#idBien").val(auxResguardos.id_bien);
+            $("#desRes").val(auxResguardos.descripcion);
+            $("#marcaRes").val(auxResguardos.marca);
+            $("#modeloRes").val(auxResguardos.modelo);
+            $("#serieRes").val(auxResguardos.serie);
+            $("#unidadSelRes").val(auxResguardos.unidad);
+            $("#cantidadRes").val(auxResguardos.cantidad);
+            $("#numResFac").val(auxResguardos.numero);
+            $("#rfcResFac").val(auxResguardos.rfc);
+            $("#fechaResFac").val(auxResguardos.fecha_factura);
+            $("#fechaCapRes").val(auxResguardos.fecha_captura);
+            $("#posicionResFac").val(auxResguardos.posicion);
+            $("#claseSelRes").val(auxResguardos.clase);
+            $("select#claseSelRes").trigger("change", auxResguardos.subclase);
+        });
+
+        $("select#claseSelRes").change(function (event, valor) {
+            // console.log(valor);
+            f_datos("php/subclases.php", { id_clase: $("#claseSelRes option:selected").val() }, function (data) {
+                $("#subClaseSelRes").empty();
+                $.each(data, function (key, value) {
+                    // console.log(value);
+                    $("#subClaseSelRes").append('<option value="' + value.id_subclase + '" >' + value.id_subclase + ' ' + value.descripcion + '</option>');
+                });
+                if (valor)
+					$("#subClaseSelRes").val(valor);
+
+            });
+
+        });
+    }
+
     function eliminarResguardo(id) {
         $.ajax({
             url: 'php/operacionesResguardo.php',
@@ -587,13 +646,151 @@ function resguardos() {
         });
     }
 
-    function selectClasesAndSubClases() {
+
+}
+
+// -----------------------------------------------------------------------------------------------------------------------------------
+// -----------------------------------------------------------Tabla reportes_baja---------------------------------------------------------
+// -----------------------------------------------------------------------------------------------------------------------------------
+function reportesBajas() {
+    $(function () {
+        cargarTablaBT('#tablaReporteBajas');
+        
+    });
+
+    f_datos("php/areas.php", {}, function (data) {
+        
+        $("#area").empty();
+        $.each(data, function (key, value) {
+            $("#area").append('<option value="' + value.clave + '" >' + value.nombre_corto + '</option>');
+        });
+        $("#area").val(dataUser.area);
+        $("#area").trigger("change");
+    });
+    var $table = $('#tablaReporteBajas');
+    var select = $('#botonEditarRepoBajas');
+    var select1 = $('#botonDetallesRepoBaja');
+
+    $(function () {
+
+        $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
+            select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+            select1.prop('disabled', !$table.bootstrapTable('getSelections').length);
+        });
+
+        select.click(function () {
+            var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+            // console.log(row);
+            auxResguardosBajas = row;
+                return row.id
+            });
+            $table.bootstrapTable('remove', {
+                field: 'id',
+                values: ids
+            });
+            select.prop('disabled', true);
+            select1.prop('disabled', true);
+        });
+    });
+   
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------------CRUD Resguardos-------------------------------------
+    // -------------------------------------------------------------------------------------------
+    $("#guardarCambiosRepoBajas").click(function () {
+        operarResguardo();
+    });
+    $('#botonEditarRepoBajas').click(function () {
+        
+        modificar();
+    });
+    $('#botonEliminarResguardo').click(function () {
+        swal({
+            title: "¿Estás seguro de eliminar la clase " + auxResguardosBajas.id_bien + " ?",
+            text: "El resguardo no se podrá recuperar una vez hecha esta operación.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+                eliminarResguardo(auxResguardosBajas.id_bien);
+            }
+            else {
+                swal(
+                    'Sin cambios',
+                    'No se realizó ninguna operación.',
+                    'error'
+                )
+            }
+        });
+    });
+    // -------------------------------------------------------------------------------------------
+    // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
+    // -------------------------------------------------------------------------------------------
+    function operarResguardo() {
+        // Dentro de la funcion, se llega a iterar.
+        $('#formResguardo').off("submit").on("submit", function (event) {
+            event.preventDefault();
+            parametros = formToObject($("#formResguardo"));
+            console.log(parametros);
+            // console.log(accion);
+            // console.log(parametros);
+            $.ajax({
+                url: 'php/operacionesResguardo.php',
+                method: 'POST',
+                data: parametros,
+                success: function (data) {
+                    // console.log(data);
+                    if (data.success) {
+                        swal(
+                            "El resguardo fue operado con exito.", {
+                            icon: "success",
+                        })
+                            .then(function () {
+                                $('#modalOperarResguardo').modal('hide');
+                                $('#tablaResguardo').bootstrapTable('refresh');
+                            });
+                    }
+
+                    else {
+                        swal(
+                            'Error de Operacion',
+                            'Hubo un error en la base de datos. ' + data.message,
+                            'error'
+                        )
+                            .then(function () {
+                                $('#modalOperarResguardo').modal('hide');
+                            });
+                    }
+                }
+            });
+        });
+    }
+
+        function modificar() {
         f_datos("php/clases.php", {}, function (data) {
             $(" #claseSelRes").empty();
             $.each(data, function (key, value) {
                 $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
             });
-            $("select#claseSelRes").trigger("change");
+            // console.log(auxResguardosBajas);
+            $('#rpeResBaja').val(auxResguardosBajas.rpe);
+            $('#rpeResBaja2').val(auxResguardosBajas.rpe);
+            $('#modalOperarRepoBajas').modal('show');
+            $('#accionResBaja').val('Modificar');
+            $("#idBienBaja").val(auxResguardosBajas.id_bien);
+            $("#desResBaja").val(auxResguardosBajas.descripcion);
+            $("#marcaResBaja").val(auxResguardosBajas.marca);
+            $("#modeloResBaja").val(auxResguardosBajas.modelo);
+            $("#serieResBaja").val(auxResguardosBajas.serie);
+            $("#unidadSelResBaja").val(auxResguardosBajas.unidad);
+            $("#cantidadResBaja").val(auxResguardosBajas.cantidad);
+            $("#numResFacBaja").val(auxResguardosBajas.numero);
+            $("#rfcResFacBaja").val(auxResguardosBajas.rfc);
+            $("#fechaResFacBaja").val(auxResguardosBajas.fecha_factura);
+            $("#fechaCapResBaja").val(auxResguardosBajas.fecha_captura);
+            $("#posicionResFacBaja").val(auxResguardosBajas.posicion);
+            $("#claseSelRes").val(auxResguardosBajas.clase);
+            $("select#claseSelRes").trigger("change", auxResguardosBajas.subclase);
         });
 
         $("select#claseSelRes").change(function (event, valor) {
@@ -604,11 +801,45 @@ function resguardos() {
                     // console.log(value);
                     $("#subClaseSelRes").append('<option value="' + value.id_subclase + '" >' + value.id_subclase + ' ' + value.descripcion + '</option>');
                 });
-
+                if (valor)
+					$("#subClaseSelRes").val(valor);
             });
-
         });
     }
+
+    function eliminarResguardo(id) {
+        $.ajax({
+            url: 'php/operacionesResguardo.php',
+            method: 'POST',
+            data: { idBien: id, accionRes: "Eliminar" },
+            success: function (data) {
+                // console.log(data);
+                if (data.success) {
+                    swal(
+                        "El reguardo fue eliminado con exito.", {
+                        icon: "success",
+                    }
+                    )
+                        .then(function () {
+                            $('#modalOperarResguardo').modal('hide');
+                            $('#tablaResguardo').bootstrapTable('refresh');
+                        });
+                }
+                else {
+                    swal(
+                        'Error de Operacion',
+                        'Hubo un error en la base de datos. ' + data.message,
+                        'error'
+                    )
+                        .then(function () {
+                            $('#modalOperarResguardo').modal('hide');
+                        });
+                }
+            }
+        });
+    }
+
+
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------
@@ -671,6 +902,15 @@ function ajaxRequestSub(params) {
 function ajaxRequestRes(params) {
     var url = 'php/selectAllResguardos.php';
     $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
+        // console.log(res);
+        params.success(res);
+    });
+}
+
+function ajaxRequestRepoBaja(params) {
+    var url = 'php/selectAllRepoBaja.php';
+    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
+        // console.log(res);
         params.success(res);
     });
 }

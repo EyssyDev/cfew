@@ -1,4 +1,3 @@
-var datos = [];
 $(document).ready(function () {
 	$("#modalModUsuario #messageModal").hide();
 	getUser();
@@ -65,12 +64,13 @@ function getUser() {
 		$('#disLink').text(data.tipo);
 		$(ventana + " #exampleModalLabel").html("Actualizar Perfil de Usuario " + data.rpe);
 		$(ventana + " #nombre").val(data.nombre);
+		$(ventana + " #rpe").val(data.rpe);
+
 	});
 }
 
 function actualizar() {
 	parametros = formToObject($("form#formPerfil"));
-	datos["nombre"] = parametros["nombre"];
 	// console.log(parametros);
 	$.ajax({
 		type: 'POST',

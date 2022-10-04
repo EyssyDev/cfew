@@ -17,8 +17,9 @@ $numero = (isset($_POST['numResFac'])) ? $_POST['numResFac'] : "";
 $fecha_factura = (isset($_POST['fechaResFac'])) ? $_POST['fechaResFac'] : "";
 $rfc = (isset($_POST['rfcResFac'])) ? $_POST['rfcResFac'] : "";
 $posicion = (isset($_POST['posicionResFac'])) ? $_POST['posicionResFac'] : "";
-$archivo = (isset($_POST['formFile'])) ? $_POST['formFile'] : "";
+$archivo = (isset($_POST['formFile'])) ? $_POST['formFile'] : ""; // ?
 $act =(isset($_POST['accionRes'])) ? $_POST['accionRes'] : "";
+
 
 if ($act == "Agregar") {
     $sql = "INSERT INTO `bien`(`rpe`, `fecha_captura`, `clase`, `subclase`, `descripcion`, `marca`, `modelo`, `serie`, `unidad`, `cantidad`, `importe`, `numero`, `fecha_factura`, `rfc`, `posicion`, `archivo`, `status`) VALUES ('".$rpe."', '".$fecha_captura."', '".$clase."', '".$subclase."', '".$descripcion."', '".$marca."', '".$modelo."', '".$serie."', '".$unidad."', '".$cantidad."', '".$importe."', '".$numero."', '".$fecha_factura."', '".$rfc."', '".$posicion."', '".$archivo."', 1)";
@@ -26,9 +27,10 @@ if ($act == "Agregar") {
 if ($act == "Eliminar") {
     $sql = "DELETE FROM `bien` WHERE `id_bien` = '".$idBien."'";
 }
-// if ($act == "Modificar") {
-//     $sql = "INSERT INTO `bien`(`rpe`, `fecha_captura`, `clase`, `subclase`, `descripcion`, `marca`, `modelo`, `serie`, `unidad`, `cantidad`, `importe`, `numero`, `fecha_factura`, `rfc`, `posicion`, `archivo`, `status`) VALUES ('".$rpe."', '".$fecha_captura."', '".$clase."', '".$subclase."', '".$descripcion."', '".$marca."', '".$modelo."', '".$serie."', '".$unidad."', '".$cantidad."', '".$importe."', '".$numero."', '".$fecha_factura."', '".$rfc."', '".$posicion."', '".$archivo."', 1)";
-// }
+if ($act == "Modificar") {
+    $sql = "UPDATE `bien` SET `fecha_captura`='".$fecha_captura."', `clase`='".$clase."', `subclase`='".$subclase."', `descripcion`='".$descripcion."', `marca`='".$marca."', `modelo`='".$modelo."', `serie`='".$serie."', `unidad`='".$unidad."', `cantidad`='".$cantidad."', `importe`='".$importe."', `numero`='".$numero."', `fecha_factura`='".$fecha_factura."', `rfc`='".$rfc."', `posicion`='".$posicion."', `archivo`='".$archivo."' WHERE `id_bien` = '".$idBien."'";
+}
+
 $resultado = getArraySQL($sql, "bmpc", true);
 header('Content-type: application/json; charset=utf-8');
 echo json_encode($resultado); 
