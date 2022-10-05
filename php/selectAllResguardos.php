@@ -1,14 +1,14 @@
 <?php
 require_once('usuarios.php');
 session_start();
-$sql = "SELECT * FROM bien WHERE status = 1 AND rpe IN ('".$_SESSION['rpe']."')";
-$resultado = getArraySQL($sql, "bmpc", true);
-header('Content-type: application/json; charset=utf-8');
+if (isset($_POST['rpe']))
+	$sql = sprintf("SELECT * FROM bien WHERE status = 1 AND rpe IN ('%s')", $_POST['rpe']);
+else if (isset($_POST['id_bien']))
+	$sql = sprintf("SELECT * FROM bien WHERE id_bien = %s", $_POST['id_bien']);
+else
+	$sql = sprintf("SELECT * FROM bien WHERE status = 1 AND rpe IN ('%s')", $_SESSION['rpe']);
 
-if($resultado["success"]) {
-	echo json_encode($resultado["data"]);
-}
-else {
-	echo "[]";
-}
+$resArray = getArraySQL($sql, "bmpc", true);
+header('Content-type: application/json; charset=utf-8');
+echo json_encode($resArray);
 ?>

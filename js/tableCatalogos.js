@@ -51,6 +51,7 @@ function clases() {
         })
         select.click(function () {
             var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
+               
                 auxID = row.id_clase;
                 auxDes = row.descripcion;
                 auxSub = row.subclase;
@@ -74,6 +75,7 @@ function clases() {
         $('#formClaseA')[0].reset();
         $('#accion').val('Agregar');
         $('#guardarCambiosClaseA').text('Registrar Clase');
+        
         multiselectClases();
 
         // -------------------------------------------------------------------------------------------------------------
@@ -86,7 +88,7 @@ function clases() {
         $('#idClase').val(auxID).attr('disabled', 'disabled');
         $('#idClase2').val(auxID);
         $('#desClase').val(auxDes);
-        $('#multipleSelect').val(auxSub);
+        // $('#multipleSelect').val(auxSub);
         $('#guardarCambiosClaseA').text('Editar Clase');
         $('#accion').val('Modificar');
         $(".vscomp-value").val("data-tooltip", auxSub)
@@ -201,13 +203,11 @@ function clases() {
     // -------------------------------------------------------------------------------------------
     // -------------------------------------Multiselect---------------------------------------
     // -------------------------------------------------------------------------------------------
-
     function multiselectClases() {
         VirtualSelect.init({
             ele: '#multipleSelect',
             maxValues: 4,
             multiple: true,
-            // selectedValue: [auxSub]
         });
         // console.log(auxSub);
         getAllSubclasesById();
@@ -223,16 +223,15 @@ function clases() {
     }
     function getAllSubclasesById() {
         $.get("php/multiselectClases.php", function (data, status) {
-
+            // console.log(data); 
             $.each(data, function (key, valor) {
                 document.querySelector("#multipleSelect").addOption({
                     value: valor.id_subclase,
                     label: valor.id_subclase
                 })
             });
-
+            
         });
-
     }
 }
 
@@ -398,6 +397,12 @@ function subclases() {
 
 function resguardos() {
     
+    var $table = $('#tablaResguardo');
+    var select = $('#botonOpcionesResguardos');
+
+    // -----------------------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------Funciones del Panel Resguardo---------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------------------
 
     f_datos("php/areas.php", {}, function (data) {
         $("#areaR").empty();
@@ -428,19 +433,24 @@ function resguardos() {
             });
             
             // if($table)
-            // 	$("#Panelrpe").trigger("change");
+            $("#Panelrpe").trigger("change");
             // else
             // 	cargaBien($("#Panelrpe").val());
         });
     });
-      
+    $("#Panelrpe").off('change').on('change',function(e){
+        var rpeR = $('#Panelrpe').val();
+        f_datos("php/selectAllResguardos.php", {rpe:rpeR}, function(stm){
+        // console.log(stm);
+        $table.bootstrapTable('load', stm)});
+        // console.log(rpeR);
+	});
+
     $(function () {
     cargarTablaBT('#tablaResguardo');
     });
 
-    var $table = $('#tablaResguardo');
-    var select = $('#botonOpcionesResguardos');
-
+    
     $(function () {
 
         $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
@@ -460,11 +470,6 @@ function resguardos() {
             select.prop('disabled', true);
         });
     });
-
-    // function datosBien() {
-       
-    // };
-   
     // -------------------------------------------------------------------------------------------
     // -------------------------------------CRUD Resguardos-------------------------------------
     // -------------------------------------------------------------------------------------------
@@ -703,26 +708,7 @@ function reportesBajas() {
         
         modificar();
     });
-    $('#botonEliminarResguardo').click(function () {
-        swal({
-            title: "¿Estás seguro de eliminar la clase " + auxResguardosBajas.id_bien + " ?",
-            text: "El resguardo no se podrá recuperar una vez hecha esta operación.",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        }).then((willDelete) => {
-            if (willDelete) {
-                eliminarResguardo(auxResguardosBajas.id_bien);
-            }
-            else {
-                swal(
-                    'Sin cambios',
-                    'No se realizó ninguna operación.',
-                    'error'
-                )
-            }
-        });
-    });
+    
     // -------------------------------------------------------------------------------------------
     // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
     // -------------------------------------------------------------------------------------------
@@ -806,40 +792,6 @@ function reportesBajas() {
             });
         });
     }
-
-    function eliminarResguardo(id) {
-        $.ajax({
-            url: 'php/operacionesResguardo.php',
-            method: 'POST',
-            data: { idBien: id, accionRes: "Eliminar" },
-            success: function (data) {
-                // console.log(data);
-                if (data.success) {
-                    swal(
-                        "El reguardo fue eliminado con exito.", {
-                        icon: "success",
-                    }
-                    )
-                        .then(function () {
-                            $('#modalOperarResguardo').modal('hide');
-                            $('#tablaResguardo').bootstrapTable('refresh');
-                        });
-                }
-                else {
-                    swal(
-                        'Error de Operacion',
-                        'Hubo un error en la base de datos. ' + data.message,
-                        'error'
-                    )
-                        .then(function () {
-                            $('#modalOperarResguardo').modal('hide');
-                        });
-                }
-            }
-        });
-    }
-
-
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------
@@ -855,6 +807,14 @@ function f_datos(url, param, fn_cb, fn_err) {
         .done(function (resp) {
             // console.log(resp);
             if (!resp.success) {
+                // swal(
+                //             'Error de Operacion',
+                //             resp.message,1 ,
+                //             'error'
+                //         )
+                //             .then(function () {
+                //                 $table.bootstrapTable('removeAll');
+                //             });
                 alert(resp.message, 1);
                 if (fn_err)
                     fn_err(resp.data);
@@ -902,8 +862,8 @@ function ajaxRequestSub(params) {
 function ajaxRequestRes(params) {
     var url = 'php/selectAllResguardos.php';
     $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
-        // console.log(res);
-        params.success(res);
+        // console.log(res["data"]);
+        params.success(res["data"]);
     });
 }
 
