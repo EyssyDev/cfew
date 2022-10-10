@@ -4,7 +4,6 @@ $Stipo = $_SESSION["id_tipo"];
 $Sarea = $_SESSION["area"]; 
 require_once('usuarios.php');
 
-if (isset($_POST['clave'])) $Sarea=$_POST['clave'];
 if ($Stipo == 10 || $Stipo == 11 ){
   $sql=sprintf("SELECT * FROM area");
 }

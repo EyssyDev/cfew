@@ -1,5 +1,4 @@
 $(document).ready(function () {
-	$("#modalModUsuario #messageModal").hide();
 	getUser();
 	$("#edit").click(function () {
 		formPerfil();

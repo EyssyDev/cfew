@@ -1,5 +1,5 @@
 // variables globales de clases
-var auxID, auxDes, auxSub = "";
+var auxClases= [];
 // variables globales de subclases
 var auxIDSubC, auxDesSubC = "";
 
@@ -10,15 +10,15 @@ var fechaHoy = fecha.toLocaleDateString() + " a la(s) " + fecha.toLocaleTimeStri
 });
 
 // variables globales de reguardos
-var auxResguardos;
+var auxResguardos = [];
 // variables globales de reguardos bajas
-var auxResguardosBajas;
+var auxResguardosBajas = [];
 
 $(document).ready(function () {
     clases();
     subclases();
     resguardos();
-    reportesBajas()
+    reportesBajas();
 });
 
 
@@ -30,14 +30,14 @@ $.get("php/refrescarSesion.php", function (data, status) {
 // -----------------------------------------------------------Tabla Clases------------------------------------------------------------
 // -----------------------------------------------------------------------------------------------------------------------------------
 function clases() {
-
     // -----------------------------------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------Diseño Print------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------------------------
     $(function () {
         cargarTablaBT('#tablaClases');
-
+        
     });
+            
     // ------------------------------------------------------------------------------------------------------------------------------------
     // ----------------------------------------FUNCION select Row BootstrapTable para Editar o eliminar---------------------------------
     // ---------------------------------------------------------------------------------------------------------------------------------
@@ -45,6 +45,7 @@ function clases() {
     var select = $('#botonOpcionesCla');
 
     $(function () {
+        
         $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function () {
             select.prop('disabled', !$table.bootstrapTable('getSelections').length);
             // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
@@ -52,10 +53,8 @@ function clases() {
         select.click(function () {
             var ids = $.map($table.bootstrapTable('getSelections'), function (row) {
                
-                auxID = row.id_clase;
-                auxDes = row.descripcion;
-                auxSub = row.subclase;
-
+                auxClases = row;
+                // console.log(auxClases);
                 return row.id
             })
             $table.bootstrapTable('remove', {
@@ -68,45 +67,48 @@ function clases() {
     // -------------------------------------------------------------------------------------------
     // -------------------------------CRUD Modal Clases----------------------------------------
     // -------------------------------------------------------------------------------------------
-
-    $('#botonAgregarClase').click(function () {
+	// esta inicialización se ocupa para resolver un detalle con las funciones de Virtual select al momento de obtener las subclases
+	var i = 0;
+	// console.log(i);
+	$('#botonAgregarClase').click(function () {
+		// console.log(i);
+		i++;
         $('.modal-title').text('Agregar Clase');
-        $('#idClase').val(auxID).removeAttr('disabled');
+        $('#idClase').removeAttr('disabled');
         $('#formClaseA')[0].reset();
         $('#accion').val('Agregar');
         $('#guardarCambiosClaseA').text('Registrar Clase');
-        
-        multiselectClases();
-
-        // -------------------------------------------------------------------------------------------------------------
-        // ------------------------------Función para el multiselect separacion de OR |---------------------------------
-        multiSplitOr();
+		
+		if(i == 1){
+ 		multiselectClases();
+		}
+       
     });
-    $('#botonActualizarClase').click(function () {
+  	$('#botonActualizarClase').click(function () {
+		// console.log(i);
+		i++;
         $('#modalAgregarClase').modal('show');
         $('.modal-title').text('Editar Clase');
-        $('#idClase').val(auxID).attr('disabled', 'disabled');
-        $('#idClase2').val(auxID);
-        $('#desClase').val(auxDes);
-        // $('#multipleSelect').val(auxSub);
+        $('#idClase').val(auxClases.id_clase).attr('disabled', 'disabled');
+        $('#idClase2').val(auxClases.id_clase);
+        $('#desClase').val(auxClases.descripcion);
         $('#guardarCambiosClaseA').text('Editar Clase');
         $('#accion').val('Modificar');
-        $(".vscomp-value").val("data-tooltip", auxSub)
-        multiselectClases();
-        // -------------------------------------------------------------------------------------------------------------
-        // ------------------------------Función para el multiselect separacion de OR |---------------------------------
-        multiSplitOr();
+        $(".vscomp-value").val("data-tooltip", auxClases.subclases);
+        if(i == 1){
+ 		multiselectClases();
+		}
     });
     $('#botonEliminarClase').click(function () {
         swal({
-            title: "¿Estás seguro de eliminar la clase " + auxID + " ?",
+            title: "¿Estás seguro de eliminar la clase " + auxClases.id_clase + " ?",
             text: "La clase no se podrá recuperar una vez hecha esta operación.",
             icon: "warning",
             buttons: true,
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
-                eliminarClase(auxID);
+                eliminarClase(auxClases.id_clase);
             }
             else {
                 swal(
@@ -121,13 +123,11 @@ function clases() {
     // -------------------------------FUNCIONES CRUD Modal Clases----------------------------------------
     // -------------------------------------------------------------------------------------------
     $("#guardarCambiosClaseA").click(function () {
-
         operarClase();
-
     });
     function operarClase() {
         $('#formClaseA').off('submit').on('submit', function (event) {
-            console.log("iter");
+            // console.log("iter");
             event.preventDefault();
             parametros = formToObject($("#formClaseA"));
             // console.log(parametros);
@@ -209,30 +209,28 @@ function clases() {
             maxValues: 4,
             multiple: true,
         });
-        // console.log(auxSub);
-        getAllSubclasesById();
+		getAllSubclasesById();
+        multiSplitOr();
     }
-
-    function multiSplitOr() {
-        $('#multipleSelect').change(function () {
-            var sub = this.value.toString();
-            var splitOr = sub.replace(/\,+/g, '|');
-            //  console.log(splitOr);
-            $(".vscomp-hidden-input").attr("value", splitOr);
-        });
-    }
-    function getAllSubclasesById() {
-        $.get("php/multiselectClases.php", function (data, status) {
-            // console.log(data); 
-            $.each(data, function (key, valor) {
+	function getAllSubclasesById() {
+		$.get("php/multiselectClases.php", function (data, status) {
+			data.forEach((valor, key) =>  {
                 document.querySelector("#multipleSelect").addOption({
                     value: valor.id_subclase,
                     label: valor.id_subclase
-                })
-            });
-            
-        });
+                });
+            }); 
+    	}); 
+        
     }
+    function multiSplitOr() {
+        $('#multipleSelect').change(function () {
+            let sub = this.value.toString();
+            let splitOr = sub.replace(/\,+/g, '|');
+            //  console.log(splitOr);
+            $(".vscomp-hidden-input").attr("value", splitOr);
+        });
+    }   
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------
@@ -275,7 +273,7 @@ function subclases() {
 
     $('#botonAgregarSubClase').click(function () {
         $('.modal-title').text('Agregar Subclase');
-        $('#idSubClase').val(auxIDSubC).removeAttr('disabled');
+        $('#idSubClase').removeAttr('disabled');
         $('#formSubClase')[0].reset();
         $('#accion').val('Agregar');
         $('#guardarCambiosSubclase').text('Registrar Subclase');
@@ -406,6 +404,7 @@ function resguardos() {
 
     f_datos("php/areas.php", {}, function (data) {
         $("#areaR").empty();
+        // console.log(data);
        
         $.each(data, function (key, value) {
             $("#areaR").append('<option value="' + value.clave + '" >' + value.nombre_corto + '</option>');
@@ -702,7 +701,7 @@ function reportesBajas() {
     // -------------------------------------CRUD Resguardos-------------------------------------
     // -------------------------------------------------------------------------------------------
     $("#guardarCambiosRepoBajas").click(function () {
-        operarResguardo();
+        operarResguardoBaja();
     });
     $('#botonEditarRepoBajas').click(function () {
         
@@ -712,7 +711,7 @@ function reportesBajas() {
     // -------------------------------------------------------------------------------------------
     // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
     // -------------------------------------------------------------------------------------------
-    function operarResguardo() {
+    function operarResguardoBaja() {
         // Dentro de la funcion, se llega a iterar.
         $('#formResguardo').off("submit").on("submit", function (event) {
             event.preventDefault();
@@ -807,14 +806,7 @@ function f_datos(url, param, fn_cb, fn_err) {
         .done(function (resp) {
             // console.log(resp);
             if (!resp.success) {
-                // swal(
-                //             'Error de Operacion',
-                //             resp.message,1 ,
-                //             'error'
-                //         )
-                //             .then(function () {
-                //                 $table.bootstrapTable('removeAll');
-                //             });
+                
                 alert(resp.message, 1);
                 if (fn_err)
                     fn_err(resp.data);
