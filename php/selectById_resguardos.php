@@ -1,5 +1,6 @@
 <?php
-require_once('usuarios.php');
+require('functMysql.php');
+
 session_start();
 $idBien = $_POST["id_bien"];
 

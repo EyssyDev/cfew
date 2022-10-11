@@ -1,9 +1,10 @@
 <?php
 error_reporting(0);
-require('usuarios.php');
+require('functMysql.php');
+
 
 $idClase =(isset($_POST['idClase'])) ? $_POST['idClase'] : $_POST['idClase2'];
-$subclaseRef =(isset($_POST['subClases'])) ? implode('|', $_POST['subClases']) : "";
+$subclaseRef =(isset($_POST['subclases'])) ? $_POST['subclases'] : "";
 $desClase =(isset($_POST['desClase'])) ? $_POST['desClase'] : "";
 $act =(isset($_POST['accion'])) ? $_POST['accion'] : "";
 

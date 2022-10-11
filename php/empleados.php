@@ -1,5 +1,6 @@
 <?php
-require_once('usuarios.php');
+require('functMysql.php');
+
 session_start();
 
 if (isset($_POST['area'])) $Sarea=$_POST['area'];

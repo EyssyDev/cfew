@@ -1,5 +1,6 @@
 <?php
-require_once('usuarios.php');
+require('functMysql.php');
+
 
 $sql2 = "SELECT DISTINCT SUBSTRING(id_subclase, 1, 2) AS id_subclase FROM subclase ORDER BY id_subclase;";
 $resultado2 = getArraySQL($sql2, "bmpc", true);

@@ -1,6 +1,6 @@
 <?php
 error_reporting(0);
-require_once('usuarios.php');
+require('usuarios.php');
 require_once('seguridad.php');
 $rpe = $_SESSION['rpe'];
 $sql = "SELECT rpe, nombre, usuario_scate.id_tipo, activo, area_clave as area, id_depto, depto_nombre, descripcion as tipo FROM usuario_scate INNER JOIN tipo_scate ON (usuario_scate.id_tipo = tipo_scate.id_tipo) WHERE rpe='" . $rpe . "'";

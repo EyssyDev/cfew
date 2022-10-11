@@ -1,5 +1,6 @@
 <?php
-require_once('usuarios.php');
+require('functMysql.php');
+
 
 if (isset($_POST['id_clase']))
 	$sql = sprintf("SELECT * FROM clase WHERE id_clase like ('%s')", $_POST['id_clase']);

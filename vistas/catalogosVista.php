@@ -25,9 +25,7 @@
                             <tr valign="baseline">
                                 <td align="left"><label class="control-label">Subclase</label></td>
                                 <td>
-                                    <select id="multipleSelect" name="subClases[]" placeholder="Subclase" data-search="true" data-silent-initial-value-set="true">
-
-                                    </select>
+                                    <div id="multipleSelect" placeholder="Subclase" data-silent-initial-value-set="true"></div>
                                 </td>
                             </tr>
 
@@ -77,7 +75,7 @@
                         </svg> Eliminar</button></li>
             </ul>
         </div>
-        <table id="tablaClases" data-multiple-select-row="true" data-click-to-select="true" data-show-copy-rows="true" data-show-print="true" data-show-refresh="true" data-show-columns="true" data-toolbar="#toolbar" data-pagination="true" data-search="true" data-method="post" data-query-params="queryParams" data-ajax="ajaxRequestCl">
+        <table data-locale="es-MX" id="tablaClases" data-multiple-select-row="true" data-click-to-select="true" data-show-copy-rows="true" data-show-print="true" data-show-refresh="true" data-show-columns="true" data-toolbar="#toolbar" data-pagination="true" data-search="true" data-method="post" data-query-params="queryParams" data-ajax="ajaxRequestCl">
             <thead>
                 <tr>
                     <th data-field="state" data-checkbox="true">ID</th>
@@ -93,3 +91,197 @@
     </div>
     <br>
 </div>
+<script>
+    // -----------------------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------Tabla Clases------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------------------
+    $(document).ready(function() {
+
+        // -----------------------------------------------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------Diseño Print------------------------------------------------------------
+        // -----------------------------------------------------------------------------------------------------------------------------------
+        $(function() {
+            cargarTablaBT('#tablaClases');
+
+        });
+        getAllSubclasesById();
+
+        // ------------------------------------------------------------------------------------------------------------------------------------
+        // ----------------------------------------FUNCION select Row BootstrapTable para Editar o eliminar---------------------------------
+        // ---------------------------------------------------------------------------------------------------------------------------------
+        var $table = $('#tablaClases');
+        var select = $('#botonOpcionesCla');
+
+        $(function() {
+
+            $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
+                select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+                // console.log(JSON.stringify($table.bootstrapTable('getSelections')));
+            })
+            select.click(function() {
+                var ids = $.map($table.bootstrapTable('getSelections'), function(row) {
+
+                    auxClases = row;
+                    // console.log(auxClases);
+                    return row.id
+                })
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: ids
+                })
+                select.prop('disabled', true)
+            });
+        });
+        // -------------------------------------------------------------------------------------------
+        // -------------------------------CRUD Modal Clases----------------------------------------
+        // -------------------------------------------------------------------------------------------
+        $('#botonAgregarClase').click(function() {
+
+            $('.modal-title').text('Agregar Clase');
+            $('#idClase').removeAttr('disabled');
+            $('#formClaseA')[0].reset();
+            $('#accion').val('Agregar');
+            $('#guardarCambiosClaseA').text('Registrar Clase');
+        });
+        $('#botonActualizarClase').click(function() {
+            $('#modalAgregarClase').modal('show');
+            $('.modal-title').text('Editar Clase');
+            $('#idClase').val(auxClases.id_clase).attr('disabled', 'disabled');
+            $('#idClase2').val(auxClases.id_clase);
+            $('#desClase').val(auxClases.descripcion);
+            $('#guardarCambiosClaseA').text('Editar Clase');
+            $('#accion').val('Modificar');
+            $("#multipleSelect").val(auxClases.subclase)
+            let sub = auxClases.subclase.split('|');
+            document.querySelector('#multipleSelect').setValue(sub);
+            // multiselectClases(auxClases.subclase);
+        });
+        $('#botonEliminarClase').click(function() {
+            swal({
+                title: "¿Estás seguro de eliminar la clase " + auxClases.id_clase + " ?",
+                text: "La clase no se podrá recuperar una vez hecha esta operación.",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    eliminarClase(auxClases.id_clase);
+                } else {
+                    swal(
+                        'Sin cambios',
+                        'No se realizó ninguna operación.',
+                        'error'
+                    )
+                }
+            });
+        });
+        // -------------------------------------------------------------------------------------------
+        // -------------------------------FUNCIONES CRUD Modal Clases----------------------------------------
+        // -------------------------------------------------------------------------------------------
+        $("#guardarCambiosClaseA").click(function() {
+            operarClase();
+        });
+
+        function operarClase() {
+            $('#formClaseA').off('submit').on('submit', function(event) {
+                // console.log("iter");
+                event.preventDefault();
+                parametros = formToObject($("#formClaseA"));
+                parametros.subclases = $('#multipleSelect').val().join("|");
+                console.log(parametros);
+                $.ajax({
+                    url: 'php/operacionesClase.php',
+                    method: 'POST',
+                    data: parametros,
+                    success: function(data) {
+                        console.log(data);
+                        if (data.success) {
+                            swal(
+                                    "La clase fue operada con exito.", {
+                                        icon: "success",
+                                    }
+                                )
+                                .then(function() {
+                                    $('#modalAgregarClase').modal('hide');
+                                    $('#tablaClases').bootstrapTable('refresh');
+                                });
+                        } else {
+                            swal(
+                                    'Error de Operacion',
+                                    data.message,
+                                    'error'
+                                )
+                                .then(function() {
+
+                                    $('#tablaClases').bootstrapTable('refresh');
+                                });
+                        }
+                    }
+                });
+            });
+
+        }
+
+
+
+        function eliminarClase(id) {
+            $.ajax({
+                url: 'php/operacionesClase.php',
+                method: 'POST',
+                data: {
+                    idClase: id,
+                    accion: "Eliminar"
+                },
+                dataType: '',
+                success: function(data) {
+                    // console.log(data);
+                    if (data.success) {
+                        swal(
+                                "La clase fue eliminada con exito.", {
+                                    icon: "success",
+                                }
+                            )
+                            .then(function() {
+                                $('#modalAgregarClase').modal('hide');
+                                $('#tablaClases').bootstrapTable('refresh');
+                            });
+                    } else {
+                        swal(
+                                'Error de Operacion',
+                                'Hubo un error en la base de datos. ' + data.message,
+                                'error'
+                            )
+                            .then(function() {
+                                $('#modalAgregarClase').modal('hide');
+                            });
+                    }
+                }
+            });
+        }
+        // -------------------------------------------------------------------------------------------
+        // -------------------------------------Multiselect---------------------------------------
+        // -------------------------------------------------------------------------------------------
+        function getAllSubclasesById() {
+            VirtualSelect.init({
+                ele: '#multipleSelect',
+                maxValues: 4,
+                multiple: true,
+                optionsSelectedText: "Seleccionadas",
+                optionSelectedText: "Seleccionada",
+                searchPlaceholderText: "Buscar",
+            })
+            let arrSub = [];
+            $.get("php/multiselectClases.php", function(data, status) {
+                data.forEach((value, key) => {
+                    arrSub[key] = {
+                        value: value.id_subclase,
+                        label: value.id_subclase
+                    };
+                });
+                // console.log(arrSub);
+                document.querySelector('#multipleSelect').setOptions(arrSub);
+            });
+        }
+
+    });
+</script>

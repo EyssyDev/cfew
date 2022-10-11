@@ -1,6 +1,6 @@
 <?php
 error_reporting(0);
-require('usuarios.php');
+require('functMysql.php');
 
 $idSubClase =(isset($_POST['idSubClase'])) ? $_POST['idSubClase'] : $_POST['idSubClase2'];
 $desSubClase =(isset($_POST['desSubClase'])) ? $_POST['desSubClase'] : "";

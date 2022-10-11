@@ -1,6 +1,7 @@
 <?php
 
-require_once('usuarios.php');
+require('functMysql.php');
+
 
 $sql = "SELECT * FROM subclase";
 $resultado = getArraySQL($sql, "bmpc", true);

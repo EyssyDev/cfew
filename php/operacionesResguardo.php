@@ -1,6 +1,7 @@
 <?php
 error_reporting(0);
-require('usuarios.php');
+require('functMysql.php');
+
 $idBien = (isset($_POST['idBien'])) ? $_POST['idBien'] : "";
 $rpe = (isset($_POST['rpeRes'])) ? $_POST['rpeRes'] : $_POST['rpeRes2'];
 $fecha_captura = (isset($_POST['fechaCapRes'])) ? $_POST['fechaCapRes'] : "";

@@ -129,7 +129,7 @@
     <!-- Fin del modal para operar Resguardos -->
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
-   
+
     <div class="container">
         <div class="row-fluid">
             <div class="panel panel-info" id="opciones">
@@ -141,20 +141,20 @@
                     <form role="formTopRes" id="formFiltro">
                         <div class="row">
                             <div class="col-xs-12 col-md-4 col-lg-4">
-                            <select name="area" id="areaR" class="form-control" title="Seleccione la Zona"></select>
+                                <select name="area" id="areaR" class="form-control" title="Seleccione la Zona"></select>
                             </div>
                             <div class="col-xs-12 col-md-4 col-lg-4">
-                            <select name="depto" id="deptoR" class="form-control" title="Seleccione la especialidad"></select>
+                                <select name="depto" id="deptoR" class="form-control" title="Seleccione la especialidad"></select>
                             </div>
                             <div class="col-xs-12 col-md-4 col-lg-4">
-                            <select name="rpe" id="Panelrpe" class="form-control" title="Seleccione el RPE"></select>
+                                <select name="rpe" id="Panelrpe" class="form-control" title="Seleccione el RPE"></select>
                             </div>
                         </div>
-                    </form>    
-                
+                    </form>
+
                 </div>
             </div>
-	    </div>
+        </div>
     </div>
     <div class="container">
         <div id="toolbar">
@@ -183,7 +183,7 @@
                         </svg> Eliminar</button></li>
             </ul>
         </div>
-        <table id="tablaResguardo" data-multiple-select-row="true" data-click-to-select="true" data-show-copy-rows="true" data-show-print="true" data-show-refresh="true" data-toolbar="#toolbar" data-pagination="true" data-search="true" data-method="post" data-ajax="ajaxRequestRes">
+        <table data-locale="es-MX" id="tablaResguardo" data-multiple-select-row="true" data-click-to-select="true" data-show-copy-rows="true" data-show-print="true" data-show-refresh="true" data-toolbar="#toolbar" data-pagination="true" data-search="true" data-method="post" data-ajax="ajaxRequestRes">
             <thead>
                 <tr>
                     <th data-field="state" data-checkbox="true">.</th>
@@ -202,3 +202,279 @@
     </div>
     <br>
 </div>
+<script>
+    // -----------------------------------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------Tabla Resguardo---------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------------------------------
+    $(document).ready(function() {
+        var $table = $('#tablaResguardo');
+        var select = $('#botonOpcionesResguardos');
+
+        // -----------------------------------------------------------------------------------------------------------------------------------
+        // -----------------------------------------------------------Funciones del Panel Resguardo---------------------------------------------------------
+        // -----------------------------------------------------------------------------------------------------------------------------------
+
+        f_datos("php/areas.php", {}, function(data) {
+            $("#areaR").empty();
+            // console.log(data);
+
+            $.each(data, function(key, value) {
+                $("#areaR").append('<option value="' + value.clave + '" >' + value.nombre_corto + '</option>');
+            });
+            $("#areaR").val(dataUser.area);
+            $("#areaR").trigger("change");
+        });
+        $("#areaR").off("change").on("change", function(e) {
+            if ($table) $table.bootstrapTable('removeAll');
+            f_datos("php/deptos.php", {}, function(datDep) {
+                // console.log(datDep);
+                $("#deptoR").empty();
+                $.each(datDep, function(key, value) {
+                    $("#deptoR").append('<option value="' + value.cl_cenco + '" >' + value.Descripcion + '</option>');
+                });
+                $("#deptoR").trigger("change");
+            });
+        });
+        $("#deptoR").off("change").on("change", function(e) {
+            f_datos("php/empleados.php", {
+                area: $("#areaR").val(),
+                depto: $("#deptoR").val()
+            }, function(datEmp) {
+                // console.log(datEmp);
+                $("#Panelrpe").empty();
+                $.each(datEmp, function(key, value) {
+                    $("#Panelrpe").append('<option value="' + value.rpe + '" ><pre>' + value.rpe + " " + value.nombre + '</pre></option>');
+                });
+                // if($table)
+                $("#Panelrpe").trigger("change");
+                // else
+                // 	cargaBien($("#Panelrpe").val());
+            });
+        });
+        $("#Panelrpe").off('change').on('change', function(e) {
+            var rpeR = $('#Panelrpe').val();
+            if ($table) $table.bootstrapTable('removeAll');
+            
+
+            f_datos("php/selectAllResguardos.php", {
+                rpe: rpeR
+            }, function(stm) {
+                // console.log(stm);
+                $table.bootstrapTable('load', stm);
+            });
+            // console.log(rpeR);
+        });
+
+        $(function() {
+            cargarTablaBT('#tablaResguardo');
+        });
+
+
+        $(function() {
+
+            $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
+                select.prop('disabled', !$table.bootstrapTable('getSelections').length);
+            });
+
+            select.click(function() {
+                var ids = $.map($table.bootstrapTable('getSelections'), function(row) {
+                    // console.log(row);
+                    auxResguardos = row;
+                    return row.id
+                });
+                $table.bootstrapTable('remove', {
+                    field: 'id',
+                    values: ids
+                });
+                select.prop('disabled', true);
+            });
+        });
+        // -------------------------------------------------------------------------------------------
+        // -------------------------------------CRUD Resguardos-------------------------------------
+        // -------------------------------------------------------------------------------------------
+        $('#botonAgregarResguardo').click(function() {
+            $('#rpeRes').val(dataUser.rpe);
+            $('#rpeRes2').val(dataUser.rpe);
+            agregar();
+        });
+        $("#guardarCambiosResguardos").click(function() {
+            operarResguardo();
+        });
+        $('#botonEditarResguardo').click(function() {
+
+            modificar();
+        });
+        $('#botonEliminarResguardo').click(function() {
+            swal({
+                title: "¿Estás seguro de eliminar la clase " + auxResguardos.id_bien + " ?",
+                text: "El resguardo no se podrá recuperar una vez hecha esta operación.",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    eliminarResguardo(auxResguardos.id_bien);
+                } else {
+                    swal(
+                        'Sin cambios',
+                        'No se realizó ninguna operación.',
+                        'error'
+                    )
+                }
+            });
+        });
+
+        
+        // -------------------------------------------------------------------------------------------
+        // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
+        // -------------------------------------------------------------------------------------------
+        function operarResguardo() {
+            // Dentro de la funcion, se llega a iterar.
+            $('#formResguardo').off("submit").on("submit", function(event) {
+                event.preventDefault();
+                parametros = formToObject($("#formResguardo"));
+                console.log(parametros);
+                // console.log(accion);
+                // console.log(parametros);
+                $.ajax({
+                    url: 'php/operacionesResguardo.php',
+                    method: 'POST',
+                    data: parametros,
+                    success: function(data) {
+                        // console.log(data);
+                        if (data.success) {
+                            swal(
+                                    "El resguardo fue operado con exito.", {
+                                        icon: "success",
+                                    })
+                                .then(function() {
+                                    $('#modalOperarResguardo').modal('hide');
+                                    $('#tablaResguardo').bootstrapTable('refresh');
+                                });
+                        } else {
+                            swal(
+                                    'Error de Operacion',
+                                    'Hubo un error en la base de datos. ' + data.message,
+                                    'error'
+                                )
+                                .then(function() {
+                                    $('#modalOperarResguardo').modal('hide');
+                                });
+                        }
+                    }
+                });
+            });
+        }
+
+        function agregar() {
+            f_datos("php/clases.php", {}, function(data) {
+                $(" #claseSelRes").empty();
+                $.each(data, function(key, value) {
+                    $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
+                });
+                $('.modal-title').text('Agregar Resguardo');
+                $('#formResguardo')[0].reset();
+                $('#accionRes').val('Agregar');
+                $('#guardarCambiosResguardos').text('Registrar Resguardo');
+                $("#fechaCapRes").val(hoy_input_date());
+                $("select#claseSelRes").trigger("change");
+            });
+
+            $("select#claseSelRes").change(function(event, valor) {
+                // console.log(valor);
+                f_datos("php/subclases.php", {
+                    id_clase: $("#claseSelRes option:selected").val()
+                }, function(data) {
+                    $("#subClaseSelRes").empty();
+                    $.each(data, function(key, value) {
+                        // console.log(value);
+                        $("#subClaseSelRes").append('<option value="' + value.id_subclase + '" >' + value.id_subclase + ' ' + value.descripcion + '</option>');
+                    });
+
+                });
+
+            });
+        }
+
+        function modificar() {
+            f_datos("php/clases.php", {}, function(data) {
+                $(" #claseSelRes").empty();
+                $.each(data, function(key, value) {
+                    $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
+                });
+                $('#rpeRes').val(auxResguardos.rpe);
+                $('#rpeRes2').val(auxResguardos.rpe);
+                $('#modalOperarResguardo').modal('show');
+                $('.modal-title').text('Editar resguardo');
+                $('#guardarCambiosResguardos').text('Editar resguardo');
+                $('#accionRes').val('Modificar');
+                $("#idBien").val(auxResguardos.id_bien);
+                $("#desRes").val(auxResguardos.descripcion);
+                $("#marcaRes").val(auxResguardos.marca);
+                $("#modeloRes").val(auxResguardos.modelo);
+                $("#serieRes").val(auxResguardos.serie);
+                $("#unidadSelRes").val(auxResguardos.unidad);
+                $("#cantidadRes").val(auxResguardos.cantidad);
+                $("#numResFac").val(auxResguardos.numero);
+                $("#rfcResFac").val(auxResguardos.rfc);
+                $("#fechaResFac").val(auxResguardos.fecha_factura);
+                $("#fechaCapRes").val(auxResguardos.fecha_captura);
+                $("#posicionResFac").val(auxResguardos.posicion);
+                $("#claseSelRes").val(auxResguardos.clase);
+                $("select#claseSelRes").trigger("change", auxResguardos.subclase);
+            });
+
+            $("select#claseSelRes").change(function(event, valor) {
+                // console.log(valor);
+                f_datos("php/subclases.php", {
+                    id_clase: $("#claseSelRes option:selected").val()
+                }, function(data) {
+                    $("#subClaseSelRes").empty();
+
+                    $.each(data, function(key, value) {
+                        // console.log(value);
+                        $("#subClaseSelRes").append('<option value="' + value.id_subclase + '" >' + value.id_subclase + ' ' + value.descripcion + '</option>');
+                    });
+                    if (valor)
+                        $("#subClaseSelRes").val(valor);
+
+                });
+
+            });
+        }
+
+        function eliminarResguardo(id) {
+            $.ajax({
+                url: 'php/operacionesResguardo.php',
+                method: 'POST',
+                data: {
+                    idBien: id,
+                    accionRes: "Eliminar"
+                },
+                success: function(data) {
+                    // console.log(data);
+                    if (data.success) {
+                        swal(
+                                "El reguardo fue eliminado con exito.", {
+                                    icon: "success",
+                                }
+                            )
+                            .then(function() {
+                                $('#modalOperarResguardo').modal('hide');
+                                $('#tablaResguardo').bootstrapTable('refresh');
+                            });
+                    } else {
+                        swal(
+                                'Error de Operacion',
+                                'Hubo un error en la base de datos. ' + data.message,
+                                'error'
+                            )
+                            .then(function() {
+                                $('#modalOperarResguardo').modal('hide');
+                            });
+                    }
+                }
+            });
+        }
+    });
+</script>

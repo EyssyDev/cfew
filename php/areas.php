@@ -1,8 +1,9 @@
 <?php
 session_start();
 $Stipo = $_SESSION["id_tipo"];
-$Sarea = $_SESSION["area"]; 
-require_once('usuarios.php');
+$Sarea = $_SESSION["area"];
+require('functMysql.php');
+
 
 if ($Stipo == 10 || $Stipo == 11 ){
   $sql=sprintf("SELECT * FROM area");

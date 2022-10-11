@@ -1,6 +1,7 @@
 <?php
 
-require_once('usuarios.php');
+require('functMysql.php');
+
 
 if (isset($_POST['id_clase'])) $clase = $_POST['id_clase']; else $clase = "";
 

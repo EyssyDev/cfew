@@ -1,5 +1,5 @@
 <?php
-require_once('usuarios.php');
+require('functMysql.php');
 session_start();
 if (isset($_POST['rpe']))
 	$sql = sprintf("SELECT * FROM bien WHERE status = 1 AND rpe IN ('%s')", $_POST['rpe']);

@@ -1,5 +1,6 @@
 <?php
-require_once('usuarios.php');
+require('functMysql.php');
+
 require_once('seguridad.php');
 session_start();
 $_SESSION['Num'] = 5;

@@ -1,6 +1,7 @@
 <?php
 
-require_once('usuarios.php');
+require('functMysql.php');
+
 
 $sql = "SELECT * FROM clase";
 $resultado = getArraySQL($sql, "bmpc", true);
