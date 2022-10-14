@@ -81,13 +81,13 @@
     $(document).ready(function() {
 
 
+        var $table = $('#tablaSubClases');
+        var select = $('#botonOpcionesSub');
         $(function() {
-            cargarTablaBT('#tablaSubClases');
+            cargarTablaBT($table);
         });
 
 
-        var $table = $('#tablaSubClases');
-        var select = $('#botonOpcionesSub');
 
         $(function() {
             $table.on('check.bs.table uncheck.bs.table check-all.bs.table uncheck-all.bs.table', function() {
@@ -230,6 +230,12 @@
             });
 
         }
-
     });
+
+    function ajaxRequestSub(params) {
+        var url = 'php/Select_all_subclases.php';
+        $.get(url, jQuery.parseJSON(params.data)).then(function(res) {
+            params.success(res);
+        });
+    }
 </script>

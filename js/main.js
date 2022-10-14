@@ -70,40 +70,7 @@ function hoy_input_date() {
     return today;
 }
 
-
-function ajaxRequestCl(params) {
-    var url = 'php/Select_all_clases.php';
-    //consola(jQuery.parseJSON(params.data));
-    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
-        // console.log(res);
-        params.success(res);
-    });
-}
-
-function ajaxRequestSub(params) {
-    var url = 'php/Select_all_subclases.php';
-    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
-        params.success(res);
-    });
-}
-
-function ajaxRequestRes(params) {
-    var url = 'php/selectAllResguardos.php';
-    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
-        // console.log(res["data"]);
-        params.success(res["data"]);
-    });
-}
-
-function ajaxRequestRepoBaja(params) {
-    var url = 'php/selectAllRepoBaja.php';
-    $.get(url, jQuery.parseJSON(params.data)).then(function (res) {
-        // console.log(res);
-        params.success(res);
-    });
-}
-
-function cargarTablaBT(tablaDinamica) {
+function cargarTablaBT(tablaDinamica,) {
     $(tablaDinamica).bootstrapTable({
         printPageBuilder: function (table) {
             return `

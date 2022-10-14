@@ -96,12 +96,13 @@
     // -----------------------------------------------------------Tabla Clases------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------------------------------
     $(document).ready(function() {
-
+        var $table = $('#tablaClases');
+        var select = $('#botonOpcionesCla');
         // -----------------------------------------------------------------------------------------------------------------------------------
         // -----------------------------------------------------------Diseño Print------------------------------------------------------------
         // -----------------------------------------------------------------------------------------------------------------------------------
         $(function() {
-            cargarTablaBT('#tablaClases');
+            cargarTablaBT($table);
 
         });
         getAllSubclasesById();
@@ -109,8 +110,7 @@
         // ------------------------------------------------------------------------------------------------------------------------------------
         // ----------------------------------------FUNCION select Row BootstrapTable para Editar o eliminar---------------------------------
         // ---------------------------------------------------------------------------------------------------------------------------------
-        var $table = $('#tablaClases');
-        var select = $('#botonOpcionesCla');
+
 
         $(function() {
 
@@ -188,7 +188,7 @@
                 event.preventDefault();
                 parametros = formToObject($("#formClaseA"));
                 parametros.subclases = $('#multipleSelect').val().join("|");
-                console.log(parametros);
+                // console.log(parametros);
                 $.ajax({
                     url: 'php/operacionesClase.php',
                     method: 'POST',
@@ -284,4 +284,13 @@
         }
 
     });
+
+    function ajaxRequestCl(params) {
+        var url = 'php/Select_all_clases.php';
+        //consola(jQuery.parseJSON(params.data));
+        $.get(url, jQuery.parseJSON(params.data)).then(function(res) {
+            // console.log(res);
+            params.success(res);
+        });
+    }
 </script>

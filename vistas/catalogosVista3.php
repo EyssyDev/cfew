@@ -183,7 +183,7 @@
                         </svg> Eliminar</button></li>
             </ul>
         </div>
-        <table data-locale="es-MX" id="tablaResguardo" data-multiple-select-row="true" data-click-to-select="true" data-show-copy-rows="true" data-show-print="true" data-show-refresh="true" data-toolbar="#toolbar" data-pagination="true" data-search="true" data-method="post" data-ajax="ajaxRequestRes">
+        <table data-locale="es-MX" id="tablaResguardo" data-multiple-select-row="true" data-click-to-select="true" data-show-copy-rows="true" data-show-print="true" data-toolbar="#toolbar" data-pagination="true" data-search="true" data-method="post" data-ajax="ajaxRequestRes">
             <thead>
                 <tr>
                     <th data-field="state" data-checkbox="true">.</th>
@@ -209,7 +209,7 @@
     $(document).ready(function() {
         var $table = $('#tablaResguardo');
         var select = $('#botonOpcionesResguardos');
-
+        var rpeR = "";
         // -----------------------------------------------------------------------------------------------------------------------------------
         // -----------------------------------------------------------Funciones del Panel Resguardo---------------------------------------------------------
         // -----------------------------------------------------------------------------------------------------------------------------------
@@ -252,9 +252,8 @@
             });
         });
         $("#Panelrpe").off('change').on('change', function(e) {
-            var rpeR = $('#Panelrpe').val();
+            rpeR = $('#Panelrpe').val();
             if ($table) $table.bootstrapTable('removeAll');
-            
 
             f_datos("php/selectAllResguardos.php", {
                 rpe: rpeR
@@ -268,7 +267,6 @@
         $(function() {
             cargarTablaBT('#tablaResguardo');
         });
-
 
         $(function() {
 
@@ -293,8 +291,7 @@
         // -------------------------------------CRUD Resguardos-------------------------------------
         // -------------------------------------------------------------------------------------------
         $('#botonAgregarResguardo').click(function() {
-            $('#rpeRes').val(dataUser.rpe);
-            $('#rpeRes2').val(dataUser.rpe);
+
             agregar();
         });
         $("#guardarCambiosResguardos").click(function() {
@@ -324,7 +321,7 @@
             });
         });
 
-        
+
         // -------------------------------------------------------------------------------------------
         // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
         // -------------------------------------------------------------------------------------------
@@ -372,6 +369,8 @@
                 $.each(data, function(key, value) {
                     $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
                 });
+                $('#rpeRes').attr("value", rpeR);
+                $('#rpeRes2').val(rpeR);
                 $('.modal-title').text('Agregar Resguardo');
                 $('#formResguardo')[0].reset();
                 $('#accionRes').val('Agregar');
@@ -477,4 +476,11 @@
             });
         }
     });
+
+    function ajaxRequestRes(params) {
+        var url = 'php/selectAllResguardos.php';
+        $.get(url, jQuery.parseJSON(params.data)).then(function(res) {
+            params.success(res.data);
+        });
+    }
 </script>

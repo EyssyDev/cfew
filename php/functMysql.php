@@ -50,7 +50,7 @@ function getArraySQL($sql, $db, $debug = false){
 
     if(!$result = mysqli_query($conexion, $sql)) {
         $rawdata["success"] = false;
-        $rawdata["message"] = "Error de Ejecuación (No. ". mysqli_errno($conexion).") ".mysqli_error($conexion);
+        $rawdata["message"] = "Error de Ejecución (No. ". mysqli_errno($conexion).") ".mysqli_error($conexion);
         echo_json($rawdata, true);
 	}
 	
