@@ -104,8 +104,17 @@
                                         </tr>
                                         <tr>
                                             <td><label class="control-label"><strong>Archivo: </strong></span></td>
-                                            <td><input class="form-control" type="file" id="formFile" name="formFile" accept=”.pdf”></td>
+                                            <td><input class="form-control" type="file" id="fileToUpload" name="fileToUpload">
+                                            </td>
+                                            <td id="tdPdf" colspan="2">
+                                                <div id="archivoPDF"></div>
+
+                                            </td>
+                                            <td>
+                                                <div id="eliminarPdf"></div>
+                                            </td>
                                         </tr>
+
                                     </table>
                                 </div>
                             </div>
@@ -284,8 +293,8 @@
                     field: 'id',
                     values: ids
                 });
-                select.prop('disabled', true);
             });
+            select.prop('disabled', true);
         });
         // -------------------------------------------------------------------------------------------
         // -------------------------------------CRUD Resguardos-------------------------------------
@@ -329,16 +338,19 @@
             // Dentro de la funcion, se llega a iterar.
             $('#formResguardo').off("submit").on("submit", function(event) {
                 event.preventDefault();
-                parametros = formToObject($("#formResguardo"));
-                console.log(parametros);
+                // parametros = formToObject($("#formResguardo"));
                 // console.log(accion);
                 // console.log(parametros);
                 $.ajax({
                     url: 'php/operacionesResguardo.php',
                     method: 'POST',
-                    data: parametros,
+                    data: new FormData(this),
+                    dataType: 'json',
+                    contentType: false,
+                    cache: false,
+                    processData: false,
                     success: function(data) {
-                        // console.log(data);
+                        console.log(data);
                         if (data.success) {
                             swal(
                                     "El resguardo fue operado con exito.", {
@@ -363,21 +375,49 @@
             });
         }
 
+        // Funcion de validación de PDF por su extensión
+        $("#fileToUpload").change(function() {
+            let file = this.files[0];
+            let fileType = file.type;
+            let fileSize = file.size / 1024;
+            let extenOnlyPDF = ['application/pdf'];
+            // console.log(fileSize);
+            if (!(fileType == extenOnlyPDF[0])) {
+                swal(
+                    'Verifica tu archivo',
+                    'Hubo un error al cargar tu archivo, solo se aceptan PDF(s)',
+                    'warning'
+                );
+                $("#fileToUpload").val('');
+                return false;
+            }
+            if (fileSize > 2048) { //No mayor a 2mb
+                swal(
+                    'Límite de tamaño del archivo',
+                    'El archivo es muy grande y no se pudo cargar',
+                    'warning'
+                );
+                $("#fileToUpload").val('');
+                return false;
+            }
+        });
+
+
         function agregar() {
             f_datos("php/clases.php", {}, function(data) {
                 $(" #claseSelRes").empty();
                 $.each(data, function(key, value) {
                     $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
                 });
-                $('#rpeRes').attr("value", rpeR);
-                $('#rpeRes2').val(rpeR);
-                $('.modal-title').text('Agregar Resguardo');
-                $('#formResguardo')[0].reset();
-                $('#accionRes').val('Agregar');
-                $('#guardarCambiosResguardos').text('Registrar Resguardo');
-                $("#fechaCapRes").val(hoy_input_date());
-                $("select#claseSelRes").trigger("change");
             });
+            $('#rpeRes').attr("value", rpeR);
+            $('#rpeRes2').val(rpeR);
+            $('.modal-title').text('Agregar Resguardo');
+            $('#formResguardo')[0].reset();
+            $('#accionRes').val('Agregar');
+            $('#guardarCambiosResguardos').text('Registrar Resguardo');
+            $("#fechaCapRes").val(hoy_input_date());
+            $("select#claseSelRes").trigger("change");
 
             $("select#claseSelRes").change(function(event, valor) {
                 // console.log(valor);
@@ -401,6 +441,18 @@
                 $.each(data, function(key, value) {
                     $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
                 });
+                console.log(auxResguardos);
+                if (auxResguardos.archivo != "") {
+                    // $('#archivoPDF').html("");   
+                    $('#tdPdf').removeAttr('colspan');
+                    $('#archivoPDF').html('<a href="pdf/' + auxResguardos.archivo + '" target="_blank"><img src="imagenes/pdf.ico" title="pdf' + auxResguardos.archivo + '">' + auxResguardos.archivo + '</a>');
+                    $("#eliminarPdf").html('<button id="eliminarPDF" type="button" class="btn btn-outline-danger"><svg xmlns = "http://www.w3.org/2000/svg"width = "16"height = "16"fill = "currentColor"class = "bi bi-trash3-fill"viewBox = "0 0 16 16" ><path d = "M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" / ></svg>Eliminar PDF </button>')
+                } else {
+                    $('#tdPdf').attr('colspan',"2");
+                    $('#archivoPDF').html("No se encontrarón archivos del bien "+ auxResguardos.id_bien+ " del trabajador "+ auxResguardos.rpe);
+                    $("#eliminarPdf").html("");
+                }
+                $("#fileToUpload").val("");
                 $('#rpeRes').val(auxResguardos.rpe);
                 $('#rpeRes2').val(auxResguardos.rpe);
                 $('#modalOperarResguardo').modal('show');
@@ -443,6 +495,40 @@
         }
 
         function eliminarResguardo(id) {
+            $.ajax({
+                url: 'php/operacionesResguardo.php',
+                method: 'POST',
+                data: {
+                    idBien: id,
+                    accionRes: "Eliminar"
+                },
+                success: function(data) {
+                    // console.log(data);
+                    if (data.success) {
+                        swal(
+                                "El reguardo fue eliminado con exito.", {
+                                    icon: "success",
+                                }
+                            )
+                            .then(function() {
+                                $('#modalOperarResguardo').modal('hide');
+                                $('#tablaResguardo').bootstrapTable('refresh');
+                            });
+                    } else {
+                        swal(
+                                'Error de Operacion',
+                                'Hubo un error en la base de datos. ' + data.message,
+                                'error'
+                            )
+                            .then(function() {
+                                $('#modalOperarResguardo').modal('hide');
+                            });
+                    }
+                }
+            });
+        }
+
+        function eliminarPDF(id) {
             $.ajax({
                 url: 'php/operacionesResguardo.php',
                 method: 'POST',

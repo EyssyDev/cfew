@@ -1,6 +1,6 @@
 <?php
 error_reporting(0);
-require('usuarios.php'); // Puedes cambuarlo a functMysql.php, solo marca mas errores pero hace las mismas consultas.
+require('functMysql.php'); // Puedes cambuarlo a functMysql.php, solo marca mas errores pero hace las mismas consultas.
 $idBien = (isset($_POST['idBien'])) ? $_POST['idBien'] : "";
 $rpe = (isset($_POST['rpeRes'])) ? $_POST['rpeRes'] : $_POST['rpeRes2'];
 $fecha_captura = (isset($_POST['fechaCapRes'])) ? $_POST['fechaCapRes'] : "";
@@ -21,6 +21,7 @@ $act =(isset($_POST['accionRes'])) ? $_POST['accionRes'] : "";
 
 if ($act == "Agregar") {
     $sql = "INSERT INTO `bien`(`rpe`, `fecha_captura`, `clase`, `subclase`, `descripcion`, `marca`, `modelo`, `serie`, `unidad`, `cantidad`, `importe`, `numero`, `fecha_factura`, `rfc`, `posicion`, `archivo`, `status`) VALUES ('".$rpe."', '".$fecha_captura."', '".$clase."', '".$subclase."', '".$descripcion."', '".$marca."', '".$modelo."', '".$serie."', '".$unidad."', '".$cantidad."', '".$importe."', '".$numero."', '".$fecha_factura."', '".$rfc."', '".$posicion."', '', 1)";
+    
 }
 
 if ($act == "Eliminar") {
@@ -37,36 +38,15 @@ if(isset($_FILES["fileToUpload"])) {
     $directorio = "../pdf/";
     $nombreArchivo = (($act == "Agregar") ? $resultado["id"] : $idBien) . "-" . $_FILES["fileToUpload"]["name"];
     $archivoSubir = $directorio . basename($nombreArchivo);
-    $archivoFormato = strtolower(pathinfo($archivoSubir, PATHINFO_EXTENSION));
-    $banderaDoc = 1;
-    
-    // Checar si el documento excede el limite de peso.
-    if ($_FILES["fileToUpload"]["size"] > 5000000) {
-        $resultado["message"] = "Este documento es demasiado pesado, se permiten maximo 5MB, ";
-        $banderaDoc = 0;
-    }
-    
-    // Checar si la extencion es realmente un pdf.
-    if($archivoFormato != "pdf") {
-        $resultado["message"] = "No es un pdf, ";
-        $banderaDoc = 0;
-    }
-    
-    // Procede a evaluar con bandera si no hubo alguna excepcion en el documento.
-    if ($banderaDoc == 0) {
-        $resultado["message"] =  $resultado["message"] . "por lo tanto, este documento fue rechazado para su registro.";
-    }
-    else {
+
         if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $archivoSubir)) {
             $resultado["message"] = "El documento " .htmlspecialchars(basename($_FILES["fileToUpload"]["name"])). " fue subido con exito.";
-            $sql2 = "UPDATE `bien` SET `archivo` = '".$nombreArchivo."' WHERE `id_bien` = '".(($act == "Agregar") ? $resultado["id"] : $idBien)."'";
+            // guardamos la ruta completa en la base de datos
+            $sql2 = "UPDATE `bien` SET `archivo` = '". $nombreArchivo."' WHERE `id_bien` = '".(($act == "Agregar") ? $resultado["id"] : $idBien)."'";
             // $sql2 = "UPDATE `bien` SET `archivo` = '".$nombreArchivo."' WHERE `id_bien` = '".$idBien."'";
             $res = getArraySQL($sql2, "bmpc", true);
+            $resultado["actualiza"] = $res;
         }
-        else {
-            $resultado["message"] = "Hubo un error al subir tu documento.";
-        }
-    }
 }
 
 header('Content-type: application/json; charset=utf-8');
