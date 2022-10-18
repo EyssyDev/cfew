@@ -329,8 +329,6 @@
                 }
             });
         });
-
-
         // -------------------------------------------------------------------------------------------
         // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
         // -------------------------------------------------------------------------------------------
@@ -375,7 +373,7 @@
             });
         }
 
-        // Funcion de validación de PDF por su extensión
+        // Funcion de validación de PDF por su extensión - Tamaño
         $("#fileToUpload").change(function() {
             let file = this.files[0];
             let fileType = file.type;
@@ -410,6 +408,9 @@
                     $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
                 });
             });
+            $('#tdPdf').attr('colspan', "2");
+            $('#archivoPDF').html("");
+            $("#eliminarPdf").html("");
             $('#rpeRes').attr("value", rpeR);
             $('#rpeRes2').val(rpeR);
             $('.modal-title').text('Agregar Resguardo');
@@ -442,14 +443,15 @@
                     $("#claseSelRes").append('<option value="' + value.id_clase + '" >' + value.id_clase + ' ' + value.descripcion + '</option>');
                 });
                 console.log(auxResguardos);
+                //
                 if (auxResguardos.archivo != "") {
                     // $('#archivoPDF').html("");   
                     $('#tdPdf').removeAttr('colspan');
                     $('#archivoPDF').html('<a href="pdf/' + auxResguardos.archivo + '" target="_blank"><img src="imagenes/pdf.ico" title="pdf' + auxResguardos.archivo + '">' + auxResguardos.archivo + '</a>');
-                    $("#eliminarPdf").html('<button id="eliminarPDF" type="button" class="btn btn-outline-danger"><svg xmlns = "http://www.w3.org/2000/svg"width = "16"height = "16"fill = "currentColor"class = "bi bi-trash3-fill"viewBox = "0 0 16 16" ><path d = "M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" / ></svg>Eliminar PDF </button>')
+                    $("#eliminarPdf").html('<button id="botonEliminarPDF" type="button" class="btn btn-outline-danger"><svg xmlns = "http://www.w3.org/2000/svg"width = "16"height = "16"fill = "currentColor"class = "bi bi-trash3-fill"viewBox = "0 0 16 16" ><path d = "M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" / ></svg>Eliminar PDF </button>')
                 } else {
-                    $('#tdPdf').attr('colspan',"2");
-                    $('#archivoPDF').html("No se encontrarón archivos del bien "+ auxResguardos.id_bien+ " del trabajador "+ auxResguardos.rpe);
+                    $('#tdPdf').attr('colspan', "2");
+                    $('#archivoPDF').html("No se encontrarón archivos del bien " + auxResguardos.id_bien + " del trabajador " + auxResguardos.rpe);
                     $("#eliminarPdf").html("");
                 }
                 $("#fileToUpload").val("");
@@ -473,6 +475,26 @@
                 $("#posicionResFac").val(auxResguardos.posicion);
                 $("#claseSelRes").val(auxResguardos.clase);
                 $("select#claseSelRes").trigger("change", auxResguardos.subclase);
+
+                $('#botonEliminarPDF').click(function() {
+                    swal({
+                        title: "¿Estás seguro de eliminar el archivo " + auxResguardos.archivo + " ?",
+                        text: "El archivo no se podrá recuperar una vez hecha esta operación.",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            eliminarPDF(auxResguardos.id_bien, auxResguardos.archivo);
+                        } else {
+                            swal(
+                                'Sin cambios',
+                                'Tu archivo sigue guardado',
+                                'error'
+                            )
+                        }
+                    });
+                });
             });
 
             $("select#claseSelRes").change(function(event, valor) {
@@ -528,16 +550,17 @@
             });
         }
 
-        function eliminarPDF(id) {
+        function eliminarPDF(id, nombreArchivo) {
             $.ajax({
                 url: 'php/operacionesResguardo.php',
                 method: 'POST',
                 data: {
                     idBien: id,
-                    accionRes: "Eliminar"
+                    archivo: nombreArchivo,
+                    accionRes: "eliminarPDF"
                 },
                 success: function(data) {
-                    // console.log(data);
+                    console.log(data);
                     if (data.success) {
                         swal(
                                 "El reguardo fue eliminado con exito.", {
@@ -545,22 +568,22 @@
                                 }
                             )
                             .then(function() {
-                                $('#modalOperarResguardo').modal('hide');
+                                $('#tdPdf').attr('colspan', "2");
+                                $('#archivoPDF').html("No se encontrarón archivos del bien " + auxResguardos.id_bien + " del trabajador " + auxResguardos.rpe);
+                                $("#eliminarPdf").html("");
                                 $('#tablaResguardo').bootstrapTable('refresh');
                             });
                     } else {
                         swal(
-                                'Error de Operacion',
-                                'Hubo un error en la base de datos. ' + data.message,
-                                'error'
-                            )
-                            .then(function() {
-                                $('#modalOperarResguardo').modal('hide');
-                            });
+                            'Error de Operacion',
+                            'Hubo un error en la base de datos. ' + data.message,
+                            'error'
+                        )
                     }
                 }
             });
         }
+
     });
 
     function ajaxRequestRes(params) {
