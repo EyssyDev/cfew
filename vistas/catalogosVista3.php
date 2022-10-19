@@ -139,6 +139,76 @@
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
     <!-- ---------------------------------------------------------------------------------------------------------------- -->
 
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+    <!-- Inicio del modal para traspasar reguardos -->
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+    <div class="modal fade" id="modalTraspasarResguardo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Traspasar Resguardo Id. N</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form class="form-horizontal" role="form" accept-charset="UTF-8" name="formTraspaso" id="formTraspaso" method="POST">
+                    <div class="modal-body">
+                        <div class="container-fluid">
+                            <table class="table table-condensed">
+                                <tr>
+                                    <td><label class="control-label"><strong>RPE Actual: </strong></span></td>
+                                    <td><input type="text" name="rpeAct" id="rpeAct" class="inputMod form-control" value="" disabled></input></td>
+                                    <td><label class="control-label"><strong>Fecha de Captura: </strong></label></td>
+                                    <td><input type="date" name="fechaCap" id="fechaCap" step="1" class="inputMod form-control" disabled></td>
+                                </tr>
+                                <tr>
+                                    <td><label class="control-label"><strong>Nuevo RPE: </strong></span></td>
+                                    <td>
+                                        <select class="inputMod form-control" id="rpeNuevo" name="rpeNuevo" placeholder="Elige un RPE" data-search="true" data-silent-initial-value-set="true" require></select>
+                                    </td>
+                                    <td><label class="control-label"><strong>Fecha de Traspaso: </strong></label></td>
+                                    <td><input type="date" name="fechaTras" id="fechaTras" step="1" class="inputMod form-control" required></td>
+                                </tr>
+                                <tr>
+                                    <td><label class="control-label"><strong>Descripcion: </strong></span></td>
+                                    <td><textarea rows="3" cols="40" name="desRes" id="desResTras" class="inputMod form-control" disabled></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td><label class="control-label"><strong>Marca: </strong></span></td>
+                                    <td><input type="text" name="marcaRes1" id="marcaResTras" class="inputMod form-control" disabled></input></td>
+                                    <td><label class="control-label"><strong>Modelo: </strong></label></td>
+                                    <td><input type="text" name="modeloRes1" id="modeloResTras" class="inputMod form-control" disabled></input></td>
+                                </tr>
+                                <tr>
+                                    <td><label class="control-label"><strong>Cantidad: </strong></span></td>
+                                    <td><input type="number" min="1" name="cantidadRes" id="cantidadResTras" class="inputMod form-control" step="any" disabled></input></td>
+                                    <td><label class="control-label"><strong>Importe $: </strong></label></td>
+                                    <td><input type="number" min="1" name="importeRes" id="importeResTras" class="inputMod form-control" step="any" disabled></input></td>
+                                </tr>
+                                <tr>
+                                    <td><label class="control-label"><strong>Nombre del Archivo: </strong></span></td>
+                                    <td><input type="text" name="nomArchivo" id="nomArchivo" class="inputMod form-control" disabled></input></td>      
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-success" id="traspasarResguardo">Traspasar</button>
+                            <input type="hidden" id="rpeRes2" name="rpeRes2" value="" />
+                            <input type="hidden" id="idBienTras" name="idBienTras" value="" />
+                            <input type="hidden" id="accionResTras" name="accionResTras" value="Traspasar"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+    <!-- Fin del modal para traspasar Resguardos -->
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+    <!-- ---------------------------------------------------------------------------------------------------------------- -->
+
     <div class="container">
         <div class="row-fluid">
             <div class="panel panel-info" id="opciones">
@@ -300,16 +370,17 @@
         // -------------------------------------CRUD Resguardos-------------------------------------
         // -------------------------------------------------------------------------------------------
         $('#botonAgregarResguardo').click(function() {
-
             agregar();
         });
+
         $("#guardarCambiosResguardos").click(function() {
             operarResguardo();
         });
-        $('#botonEditarResguardo').click(function() {
 
+        $('#botonEditarResguardo').click(function() {
             modificar();
         });
+        
         $('#botonEliminarResguardo').click(function() {
             swal({
                 title: "¿Estás seguro de eliminar la clase " + auxResguardos.id_bien + " ?",
@@ -328,6 +399,14 @@
                     )
                 }
             });
+        });
+
+        $('#botonTraspasar').click(function() {
+            traspasar();
+        });
+
+        $("#traspasarResguardo").click(function() {
+            traspasarResguardo();
         });
         // -------------------------------------------------------------------------------------------
         // -------------------------------funciones CRUD Modal Resguardo----------------------------------------
@@ -399,7 +478,6 @@
                 return false;
             }
         });
-
 
         function agregar() {
             f_datos("php/clases.php", {}, function(data) {
@@ -581,6 +659,63 @@
                         )
                     }
                 }
+            });
+        }
+
+        function traspasar() {
+            f_datos("php/soloEmpleados.php", {}, function(data) {
+                $(" #rpeNuevo").empty();
+
+                $.each(data, function(key, value) {
+                    $("#rpeNuevo").append('<option value="' + value.rpe + '" >' + value.rpe + ' ' + value.nombre + '</option>');
+                });
+
+                $("#modalTraspasarResguardo #exampleModalLabel").html("Traspasar Resguardo Id." + auxResguardos.id_bien);
+                $("#idBienTras").val(auxResguardos.id_bien);
+                $('#rpeAct').val(auxResguardos.rpe);
+                $('#rpeRes2').val(auxResguardos.rpe);
+                $("#fechaCap").val(auxResguardos.fecha_captura);
+                $("#desResTras").val(auxResguardos.descripcion);
+                $("#marcaResTras").val(auxResguardos.marca);
+                $("#modeloResTras").val(auxResguardos.modelo);
+                $("#cantidadResTras").val(auxResguardos.cantidad);
+                $("#importeResTras").val(auxResguardos.importe);
+                $("#nomArchivo").val(auxResguardos.archivo);
+                $('#modalTraspasarResguardo').modal('show');
+            });
+        }
+
+        function traspasarResguardo() {
+            $('#formTraspaso').off("submit").on("submit", function(event) {
+                event.preventDefault();
+                parametros = formToObject($("#formTraspaso"));
+                console.log(parametros);
+                $.ajax({
+                    url: 'php/operacionesResguardo.php',
+                    method: 'POST',
+                    data: parametros,
+                    success: function(data) {
+                        if (data.success) {
+                            swal(
+                                    "El resguardo fue traspasado con exito.", {
+                                        icon: "success",
+                                    })
+                                .then(function() {
+                                    $('#modalTraspasarResguardo').modal('hide');
+                                    $('#tablaResguardo').bootstrapTable('refresh');
+                                });
+                        } else {
+                            swal(
+                                    'Error de Operacion',
+                                    'Hubo un error en la base de datos. ' + data.message,
+                                    'error'
+                                )
+                                .then(function() {
+                                    $('#modalTraspasarResguardo').modal('hide');
+                                });
+                        }
+                    }
+                });
             });
         }
 

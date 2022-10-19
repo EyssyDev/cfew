@@ -20,9 +20,13 @@ $posicion = (isset($_POST['posicionResFac'])) ? $_POST['posicionResFac'] : "";
 $act =(isset($_POST['accionRes'])) ? $_POST['accionRes'] : "";
 $archivo =(isset($_POST['archivo'])) ? $_POST['archivo'] : "";
 
+$actTras = (isset($_POST['accionResTras'])) ? $_POST['accionResTras'] : "";
+$idBienTras = (isset($_POST['idBienTras'])) ? $_POST['idBienTras'] : "";
+$rpeNuevo = (isset($_POST['rpeNuevo'])) ? $_POST['rpeNuevo'] : "";
+$fechaTras = (isset($_POST['fechaTras'])) ? $_POST['fechaTras'] : "";
+
 if ($act == "Agregar") {
     $sql = "INSERT INTO `bien`(`rpe`, `fecha_captura`, `clase`, `subclase`, `descripcion`, `marca`, `modelo`, `serie`, `unidad`, `cantidad`, `importe`, `numero`, `fecha_factura`, `rfc`, `posicion`, `archivo`, `status`) VALUES ('".$rpe."', '".$fecha_captura."', '".$clase."', '".$subclase."', '".$descripcion."', '".$marca."', '".$modelo."', '".$serie."', '".$unidad."', '".$cantidad."', '".$importe."', '".$numero."', '".$fecha_factura."', '".$rfc."', '".$posicion."', '', 1)";
-    
 }
 
 if ($act == "Eliminar") {
@@ -32,11 +36,15 @@ if ($act == "Eliminar") {
 if ($act == "Modificar") {
     $sql = "UPDATE `bien` SET `fecha_captura`='".$fecha_captura."', `clase`='".$clase."', `subclase`='".$subclase."', `descripcion`='".$descripcion."', `marca`='".$marca."', `modelo`='".$modelo."', `serie`='".$serie."', `unidad`='".$unidad."', `cantidad`='".$cantidad."', `importe`='".$importe."', `numero`='".$numero."', `fecha_factura`='".$fecha_factura."', `rfc`='".$rfc."', `posicion`='".$posicion."', `archivo`='".$documento."' WHERE `id_bien` = '".$idBien."'";
 }
-if($act == "eliminarPDF"){
+
+if ($actTras == "Traspasar") {
+    $sql = "UPDATE `bien` SET `rpe`='".$rpeNuevo."', `fecha_traspaso`='".$fechaTras."' WHERE `id_bien` = '".$idBienTras."'";
+}
+
+if ($act == "eliminarPDF"){
     eliminarPDF($archivo);
     $sql = "UPDATE `bien` SET `archivo` = '' WHERE `id_bien` = '" . (($act == "Agregar") ? $resultado["id"] : $idBien) . "'";
 }
-
 
 function eliminarPDF($archivo)
 {
